@@ -1,0 +1,22 @@
+{
+  "w": 1080, "h": 1920, "fps": 30,
+  "defaults": {"transition": 2, "transDur": 0.8, "replay": 1, "bgMode": 0, "palette": 0, "timerMin": 5, "cycle": 0, "glowAmt": 0.45},
+  "segments": [
+    {"name": "intro", "dur": 3.6, "values": {"preset": 0},
+     "texts": ["EVA- / RESPONSIVE", "PATCH WIRE · RESOLUME", "獏 / 宇宙人", "EPISODE:01", "", ""]},
+    {"name": "terminal", "dur": 6.8, "values": {"preset": 8},
+     "texts": ["OVERLAY TEXTE / FAÇON EVANGELION", "pour Resolume Wire + Arena", "獏 / 宇宙人", "SYSTEME", "6 CHAMPS DE TEXTE / 9 PRESETS ANIMÉS / DÉFILEMENT AUTO + TRANSITIONS", ""]},
+    {"name": "alerte", "dur": 4.4, "values": {"preset": 1},
+     "texts": ["TYPO / INTACTE", "aucune lettre coupée", "警告", "RÈGLE 01", "ANIMÉ GLYPHE PAR GLYPHE / FRAPPE · DÉCODAGE · BALAYAGE", "LA TYPO NE CASSE JAMAIS"]},
+    {"name": "magi", "dur": 5.0, "values": {"preset": 2, "seed": 7},
+     "texts": ["MISE EN PAGE / RESPONSIVE", "", "", "16:9 · 9:16 · 1:1", "LA MÊME SOURCE / SE RECOMPOSE / SELON LE FORMAT", ""]},
+    {"name": "formats", "dur": 5.4, "split": true, "values": {"preset": 6, "transDur": 0.0},
+     "texts": ["UN PATCH / 3 FORMATS", "16:9 · 1:1 · 9:16", "獏 / 宇宙人", "RESPONSIVE", "LAYOUT RECALCULÉ / À CHAQUE FRAME", ""]},
+    {"name": "timer", "dur": 4.2, "values": {"preset": 5, "timerMin": 3},
+     "texts": ["COMPTE / À REBOURS", "piloté depuis Arena", "", "LIVE", "", ""]},
+    {"name": "seele", "dur": 4.0, "values": {"preset": 3},
+     "texts": ["texte tapé en direct / dans Arena", "«/» pour aller à la ligne", "", "SEELE", "", ""]},
+    {"name": "outro", "dur": 4.6, "values": {"preset": 7, "bgMode": 3},
+     "texts": ["EVA-RESPONSIVE", "patch Wire · Resolume Arena", "獏 / 宇宙人", "NEW", "9 PRESETS · 6 CHAMPS / 16:9 · 9:16 · 1:1", "OVERLAY TEXTE EVANGELION"]}
+  ]
+}

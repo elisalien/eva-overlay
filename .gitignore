@@ -1,0 +1,9 @@
+fonts/*.otf
+fonts/*.ttf
+dist/
+shots/
+frames/
+frames_*/
+split/
+*.mp4
+__pycache__/

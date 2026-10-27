@@ -1,0 +1,30 @@
+{
+  "w": 1080, "h": 1920, "fps": 30,
+  "frames": "frames_bi", "out": "EVA-Responsive_reel_EN-FR.mp4",
+  "defaults": {"transition": 2, "transDur": 0.8, "replay": 1, "bgMode": 0, "palette": 0, "timerMin": 5, "cycle": 0, "glowAmt": 0.45},
+  "captions": [
+    ["SAME PATCH  ·  3 FORMATS", 40, 40, "ui", "org"],
+    ["même patch · 3 formats", 40, 125, "mincho", "white"],
+    ["the layout rebuilds itself", 40, 1650, "mincho", "white"],
+    ["la mise en page se recompose seule", 40, 1725, "mincho", "white"],
+    ["16:9 · 1:1 · 9:16 · ultra-wide / ultra-large", 40, 1815, "small", "org"]
+  ],
+  "segments": [
+    {"name": "intro", "dur": 4.0, "values": {"preset": 0},
+     "texts": ["EVA- / RESPONSIVE", "by Elisalien · par Elisalien", "獏 / 宇宙人", "EPISODE:01", "", ""]},
+    {"name": "terminal", "dur": 8.6, "values": {"preset": 8},
+     "texts": ["EVANGELION-STYLE / TEXT OVERLAY", "overlay texte façon Evangelion", "", "SYSTEM", "6 TEXT FIELDS / 6 CHAMPS DE TEXTE / 9 ANIMATED PRESETS / 9 PRESETS ANIMÉS / AUTO SCROLL + TRANSITIONS / DÉFILEMENT AUTO + TRANSITIONS", ""]},
+    {"name": "alerte", "dur": 4.6, "values": {"preset": 1},
+     "texts": ["UNBROKEN / TYPE", "typo intacte · aucune lettre coupée", "警告", "RULE 01 · RÈGLE 01", "GLYPH-BY-GLYPH ANIMATION / ANIMÉ GLYPHE PAR GLYPHE", "TYPE NEVER BREAKS · LA TYPO NE CASSE JAMAIS"]},
+    {"name": "magi", "dur": 5.2, "values": {"preset": 2, "seed": 7},
+     "texts": ["RESPONSIVE / LAYOUT", "mise en page responsive", "", "16:9 · 9:16 · 1:1", "ONE SOURCE, ANY FORMAT / UNE SOURCE, TOUS FORMATS", ""]},
+    {"name": "formats", "dur": 5.6, "split": true, "values": {"preset": 6, "transDur": 0.0},
+     "texts": ["ONE PATCH / 3 FORMATS", "un patch · 3 formats", "獏 / 宇宙人", "RESPONSIVE", "LAYOUT REBUILT EVERY FRAME / RECALCULÉ À CHAQUE FRAME", ""]},
+    {"name": "timer", "dur": 4.4, "values": {"preset": 5, "timerMin": 3},
+     "texts": ["COUNTDOWN", "compte à rebours", "", "CONTROLLED FROM ARENA · PILOTÉ DEPUIS ARENA", "", ""]},
+    {"name": "seele", "dur": 4.4, "values": {"preset": 3},
+     "texts": ["typed live in Arena / tapé en direct dans Arena", "«/» = new line · retour à la ligne", "", "SEELE", "", ""]},
+    {"name": "outro", "dur": 5.0, "values": {"preset": 7, "bgMode": 3},
+     "texts": ["EVA-RESPONSIVE", "by Elisalien · par Elisalien", "獏 / 宇宙人", "NEW", "9 PRESETS · 6 FIELDS · 6 CHAMPS / 16:9 · 9:16 · 1:1", "EVANGELION TEXT OVERLAY · OVERLAY TEXTE EVANGELION"]}
+  ]
+}

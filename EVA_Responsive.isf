@@ -1,0 +1,1593 @@
+/*{
+    "DESCRIPTION": "EVA Overlay - interface texte facon Evangelion : 6 champs de texte (Text Render du patch Wire) mis en page ligne par ligne dans 9 presets (carte titre, alerte, MAGI, Sound Only, synchro, activite, pattern blue, bandeau, terminal), defilement des presets avec transitions, animations au glyphe (frappe, decodage, balayage) qui ne deforment jamais la typo. Fond transparent ou noir.",
+    "CREDIT": "Nicolas David",
+    "ISFVSN": "2",
+    "VSN": "1.0",
+    "CATEGORIES": [ "Generator" ],
+    "INPUTS": [
+        { "NAME": "txt0", "TYPE": "image" },
+        { "NAME": "txt1", "TYPE": "image" },
+        { "NAME": "txt2", "TYPE": "image" },
+        { "NAME": "txt3", "TYPE": "image" },
+        { "NAME": "txt4", "TYPE": "image" },
+        { "NAME": "txt5", "TYPE": "image" },
+        { "NAME": "atlas", "TYPE": "image" },
+        { "NAME": "len0", "LABEL": "Len 1", "TYPE": "float", "MIN": 0.0, "MAX": 100000.0, "DEFAULT": 0.0 },
+        { "NAME": "len1", "LABEL": "Len 2", "TYPE": "float", "MIN": 0.0, "MAX": 100000.0, "DEFAULT": 0.0 },
+        { "NAME": "len2", "LABEL": "Len 3", "TYPE": "float", "MIN": 0.0, "MAX": 100000.0, "DEFAULT": 0.0 },
+        { "NAME": "len3", "LABEL": "Len 4", "TYPE": "float", "MIN": 0.0, "MAX": 100000.0, "DEFAULT": 0.0 },
+        { "NAME": "len4", "LABEL": "Len 5", "TYPE": "float", "MIN": 0.0, "MAX": 100000.0, "DEFAULT": 0.0 },
+        { "NAME": "len5", "LABEL": "Len 6", "TYPE": "float", "MIN": 0.0, "MAX": 100000.0, "DEFAULT": 0.0 },
+        { "NAME": "tSec", "LABEL": "Secondes", "TYPE": "float", "MIN": 0.0, "MAX": 1000000.0, "DEFAULT": 0.0 },
+        { "NAME": "tBeat", "LABEL": "Temps", "TYPE": "float", "MIN": 0.0, "MAX": 1000000.0, "DEFAULT": 0.0 },
+
+        { "NAME": "preset", "LABEL": "Preset", "TYPE": "long", "VALUES": [0, 1, 2, 3, 4, 5, 6, 7, 8], "LABELS": ["Carte titre", "Alerte", "MAGI", "Sound Only", "Synchro", "Activite", "Pattern Blue", "Bandeau", "Terminal"], "DEFAULT": 0 },
+        { "NAME": "cycle", "LABEL": "Defilement", "TYPE": "long", "VALUES": [0, 1, 2], "LABELS": ["Fixe", "Auto", "Aleatoire"], "DEFAULT": 0 },
+        { "NAME": "clockMode", "LABEL": "Horloge", "TYPE": "long", "VALUES": [0, 1], "LABELS": ["Secondes", "Temps"], "DEFAULT": 0 },
+        { "NAME": "duree", "LABEL": "Duree", "TYPE": "float", "MIN": 1.0, "MAX": 64.0, "DEFAULT": 10.0 },
+        { "NAME": "transition", "LABEL": "Transition", "TYPE": "long", "VALUES": [0, 1, 2, 3], "LABELS": ["Coupe", "Flash", "Signal", "Volet"], "DEFAULT": 2 },
+        { "NAME": "transDur", "LABEL": "Duree transition", "TYPE": "float", "MIN": 0.0, "MAX": 3.0, "DEFAULT": 0.8 },
+        { "NAME": "replay", "LABEL": "Rejouer si texte change", "TYPE": "long", "VALUES": [0, 1], "LABELS": ["Non", "Oui"], "DEFAULT": 1 },
+
+        { "NAME": "margin", "LABEL": "Marge", "TYPE": "float", "MIN": 0.0, "MAX": 0.2, "DEFAULT": 0.05 },
+        { "NAME": "fill", "LABEL": "Taille texte", "TYPE": "float", "MIN": 0.3, "MAX": 1.0, "DEFAULT": 1.0 },
+        { "NAME": "stretch", "LABEL": "Etirement", "TYPE": "float", "MIN": 0.5, "MAX": 1.6, "DEFAULT": 1.0 },
+        { "NAME": "justify", "LABEL": "Alignement", "TYPE": "long", "VALUES": [0, 1, 2, 3, 4], "LABELS": ["Auto", "Gauche", "Centre", "Droite", "Justifie"], "DEFAULT": 0 },
+        { "NAME": "leading", "LABEL": "Interligne", "TYPE": "float", "MIN": 0.0, "MAX": 1.0, "DEFAULT": 0.22 },
+        { "NAME": "orient", "LABEL": "Orientation", "TYPE": "long", "VALUES": [0, 1, 2], "LABELS": ["Auto", "Paysage", "Portrait"], "DEFAULT": 0 },
+
+        { "NAME": "speed", "LABEL": "Vitesse", "TYPE": "float", "MIN": 0.25, "MAX": 3.0, "DEFAULT": 1.0 },
+        { "NAME": "entree", "LABEL": "Entree", "TYPE": "long", "VALUES": [0, 1, 2, 3, 4, 5], "LABELS": ["Auto", "Coupe", "Frappe", "Decodage", "Balayage", "Clignotement"], "DEFAULT": 0 },
+        { "NAME": "sortie", "LABEL": "Sortie", "TYPE": "long", "VALUES": [0, 1, 2, 3, 4], "LABELS": ["Auto", "Coupe", "Effacement", "Balayage", "Clignotement"], "DEFAULT": 0 },
+        { "NAME": "stagger", "LABEL": "Decalage lignes", "TYPE": "float", "MIN": 0.0, "MAX": 1.0, "DEFAULT": 0.5 },
+        { "NAME": "blink", "LABEL": "Clignotement", "TYPE": "float", "MIN": 0.0, "MAX": 1.0, "DEFAULT": 0.7 },
+        { "NAME": "glitch", "LABEL": "Glitch", "TYPE": "float", "MIN": 0.0, "MAX": 1.0, "DEFAULT": 0.1 },
+        { "NAME": "timerMin", "LABEL": "Compte a rebours", "TYPE": "float", "MIN": 0.0, "MAX": 10.0, "DEFAULT": 5.0 },
+        { "NAME": "seed", "LABEL": "Graine", "TYPE": "float", "MIN": 0.0, "MAX": 100.0, "DEFAULT": 7.0 },
+
+        { "NAME": "palette", "LABEL": "Palette", "TYPE": "long", "VALUES": [0, 1, 2, 3, 4, 5, 6, 7, 8], "LABELS": ["Auto", "NERV Orange", "Alerte Rouge", "MAGI Vert", "Pattern Bleu", "Unite-01", "Unite-02", "Unite-00", "Blanc Titre"], "DEFAULT": 0 },
+        { "NAME": "bgMode", "LABEL": "Fond", "TYPE": "long", "VALUES": [0, 1, 2, 3], "LABELS": ["Auto", "Transparent", "Voile", "Noir"], "DEFAULT": 0 },
+        { "NAME": "uiAmt", "LABEL": "Interface", "TYPE": "float", "MIN": 0.0, "MAX": 1.0, "DEFAULT": 1.0 },
+        { "NAME": "opacity", "LABEL": "Opacite", "TYPE": "float", "MIN": 0.0, "MAX": 1.0, "DEFAULT": 1.0 },
+        { "NAME": "glowAmt", "LABEL": "Lueur", "TYPE": "float", "MIN": 0.0, "MAX": 1.0, "DEFAULT": 0.45 },
+        { "NAME": "scan", "LABEL": "Scanlines", "TYPE": "float", "MIN": 0.0, "MAX": 1.0, "DEFAULT": 0.3 },
+        { "NAME": "grain", "LABEL": "Grain", "TYPE": "float", "MIN": 0.0, "MAX": 1.0, "DEFAULT": 0.2 },
+        { "NAME": "chroma", "LABEL": "Aberration", "TYPE": "float", "MIN": 0.0, "MAX": 1.0, "DEFAULT": 0.2 },
+
+        { "NAME": "pulse", "LABEL": "Pulse", "TYPE": "float", "MIN": 0.0, "MAX": 1.0, "DEFAULT": 0.0 },
+        { "NAME": "level", "LABEL": "Niveau", "TYPE": "float", "MIN": 0.0, "MAX": 1.0, "DEFAULT": 0.0 }
+    ],
+    "PASSES": [
+        { "TARGET": "st",    "WIDTH": "8",   "HEIGHT": "1",    "PERSISTENT": true },
+        { "TARGET": "cov",   "WIDTH": "480", "HEIGHT": "1620", "PERSISTENT": true },
+        { "TARGET": "rowA",  "WIDTH": "32",  "HEIGHT": "1620", "FLOAT": true, "PERSISTENT": true },
+        { "TARGET": "rows",  "WIDTH": "6",   "HEIGHT": "270",  "FLOAT": true, "PERSISTENT": true },
+        { "TARGET": "lines", "WIDTH": "6",   "HEIGHT": "8",    "FLOAT": true, "PERSISTENT": true },
+        { "TARGET": "gcol",  "WIDTH": "480", "HEIGHT": "36",   "PERSISTENT": true },
+        { "TARGET": "gblk",  "WIDTH": "32",  "HEIGHT": "36",   "FLOAT": true, "PERSISTENT": true },
+        { "TARGET": "gidx",  "WIDTH": "480", "HEIGHT": "36",   "FLOAT": true, "PERSISTENT": true },
+        { "TARGET": "scene" },
+        { "TARGET": "gA",    "WIDTH": "floor($WIDTH/4)", "HEIGHT": "floor($HEIGHT/4)", "FLOAT": true },
+        { "TARGET": "gB",    "WIDTH": "floor($WIDTH/4)", "HEIGHT": "floor($HEIGHT/4)", "FLOAT": true },
+        { }
+    ]
+}*/
+
+// How it works
+// - The six text fields arrive as white-on-transparent textures from Text Render nodes.
+//   The first passes measure them on a 480 x 270 grid: ink coverage, then each text line
+//   (up to 6 per field, split on empty rows) and, inside a line, the glyph index of each
+//   column. So the layout can place and scale every line on its own (Eva justified
+//   titles) and the animations can reveal whole glyphs (typing, decoding) without ever
+//   cutting or distorting a letter. These passes are persistent and only rerun when the
+//   text changes (plus a safety refresh every 30 frames): live cost is near zero.
+// - The st pass (first) is a 2 x 1 state: preset on screen, its start time, the preset waiting to come
+//   in and when it was asked. The outgoing preset plays its exit, then the cut happens.
+// - The scene pass draws the preset (premultiplied), gA / gB blur it for the glow, the last
+//   pass adds glow, scanlines, grain, chromatic offset, background and the transition.
+// Layout is in pixels with "U" = 1 % of the short side, so every preset recomposes itself
+// for 16:9, 4:3, square, portrait or ultra-wide outputs.
+
+// ATLAS BEGIN
+// generated by build_atlas.py (2048x2048)
+#define A_NERV vec4(0.245117, 0.281250, 0.379883, 0.320312)
+#define A_MAGI vec4(0.491699, 0.686523, 0.612793, 0.726562)
+#define A_MAGISYS vec4(0.617676, 0.686523, 0.849609, 0.726562)
+#define A_MEL vec4(0.002441, 0.639648, 0.199219, 0.679688)
+#define A_BAL vec4(0.204102, 0.639648, 0.438965, 0.679688)
+#define A_CAS vec4(0.443848, 0.639648, 0.610840, 0.679688)
+#define A_SOUND vec4(0.615723, 0.639648, 0.940918, 0.679688)
+#define A_SEELE vec4(0.002441, 0.594727, 0.162109, 0.634766)
+#define A_KEIKOKU vec4(0.002441, 0.944336, 0.109375, 0.997559)
+#define A_WARNING vec4(0.166992, 0.594727, 0.408203, 0.634766)
+#define A_EMERG vec4(0.413086, 0.594727, 0.721191, 0.634766)
+#define A_CAUTION vec4(0.726074, 0.594727, 0.938477, 0.634766)
+#define A_DANGER vec4(0.002441, 0.549805, 0.209961, 0.589844)
+#define A_LIMIT vec4(0.002441, 0.779297, 0.326172, 0.829102)
+#define A_ATR vec4(0.214844, 0.549805, 0.626953, 0.589844)
+#define A_INTJ vec4(0.676758, 0.947266, 0.888184, 0.997559)
+#define A_EXTJ vec4(0.002441, 0.889160, 0.217285, 0.939453)
+#define A_INTERNAL vec4(0.384766, 0.281250, 0.550781, 0.320312)
+#define A_EXTERNAL vec4(0.555664, 0.281250, 0.728516, 0.320312)
+#define A_STOP vec4(0.631836, 0.549805, 0.719238, 0.589844)
+#define A_SLOW vec4(0.724121, 0.549805, 0.821777, 0.589844)
+#define A_NORMAL vec4(0.826660, 0.549805, 0.972656, 0.589844)
+#define A_RACING vec4(0.002441, 0.504883, 0.129395, 0.544922)
+#define A_PBJ vec4(0.222168, 0.889160, 0.490234, 0.939453)
+#define A_PB vec4(0.583984, 0.325684, 0.956543, 0.365234)
+#define A_SHITO vec4(0.114258, 0.944824, 0.222656, 0.997559)
+#define A_SHONIN vec4(0.440430, 0.780273, 0.547363, 0.829102)
+#define A_HIKETSU vec4(0.495117, 0.889160, 0.600586, 0.939453)
+#define A_TEISO vec4(0.605469, 0.889160, 0.710938, 0.939453)
+#define A_KETSUGI vec4(0.715820, 0.889160, 0.821777, 0.939453)
+#define A_SHINGI vec4(0.826660, 0.889160, 0.982910, 0.939453)
+#define A_KAKETSU vec4(0.002441, 0.833984, 0.106934, 0.884277)
+#define A_SYNC vec4(0.134277, 0.504883, 0.334961, 0.544922)
+#define A_SYNCJ vec4(0.111816, 0.833984, 0.376953, 0.884277)
+#define A_CODE vec4(0.339844, 0.504883, 0.428711, 0.544922)
+#define A_SECRET vec4(0.433594, 0.504883, 0.741699, 0.544922)
+#define A_BLOOD vec4(0.002441, 0.459961, 0.326660, 0.500000)
+#define A_HARMO vec4(0.331543, 0.459961, 0.536133, 0.500000)
+#define A_PLUG vec4(0.541016, 0.459961, 0.746582, 0.500000)
+#define A_ATF vec4(0.733398, 0.281250, 0.898438, 0.320312)
+#define A_EPISODE vec4(0.552246, 0.786133, 0.803711, 0.829102)
+#define A_TBC vec4(0.002441, 0.731445, 0.545898, 0.774414)
+#define A_TARGET vec4(0.751465, 0.459961, 0.884277, 0.500000)
+#define A_LOCK vec4(0.002441, 0.415039, 0.149414, 0.455078)
+#define A_DIST vec4(0.154297, 0.415039, 0.320312, 0.455078)
+#define A_ALT vec4(0.002441, 0.280762, 0.160645, 0.320312)
+#define A_ANALYSIS vec4(0.325195, 0.415039, 0.492188, 0.455078)
+#define A_DATA vec4(0.903320, 0.281250, 0.992188, 0.320312)
+#define A_NOSIG vec4(0.497070, 0.415039, 0.769531, 0.455078)
+#define A_STANDBY vec4(0.774414, 0.415039, 0.931152, 0.455078)
+#define A_ONLINE vec4(0.002441, 0.370117, 0.124023, 0.410156)
+#define A_ERROR vec4(0.128906, 0.370117, 0.297852, 0.410156)
+#define A_MODE vec4(0.302734, 0.370117, 0.398926, 0.410156)
+#define A_UNIT vec4(0.165527, 0.280762, 0.240234, 0.320312)
+#define A_KAISEKI vec4(0.381836, 0.833984, 0.538574, 0.884277)
+#define A_SHOGO vec4(0.543457, 0.833984, 0.648926, 0.884277)
+#define A_SETSUZOKU vec4(0.653809, 0.833984, 0.759277, 0.884277)
+#define A_KIDOU vec4(0.331055, 0.779297, 0.435547, 0.829102)
+#define A_JIKAI vec4(0.227539, 0.944824, 0.443848, 0.997559)
+#define A_DAI vec4(0.448730, 0.944824, 0.501465, 0.997559)
+#define A_WA vec4(0.506348, 0.944824, 0.559082, 0.997559)
+#define A_REC vec4(0.403809, 0.370117, 0.500000, 0.410156)
+#define A_LIVE vec4(0.002441, 0.236816, 0.107910, 0.275879)
+#define A_TRANSMIT vec4(0.504883, 0.370117, 0.766113, 0.410156)
+#define A_STATUS vec4(0.770996, 0.370117, 0.899414, 0.410156)
+#define A_SIGNAL vec4(0.002441, 0.325195, 0.126953, 0.365234)
+#define A_EVA vec4(0.112793, 0.236816, 0.208984, 0.275879)
+#define A_JOSHIKI vec4(0.563965, 0.944824, 0.671875, 0.997559)
+#define A_HUMAN vec4(0.131836, 0.325195, 0.579102, 0.365234)
+#define A_DIGITS vec4(0.002441, 0.684570, 0.486816, 0.726562)
+#define A_DIGIT_N 16.0
+// ATLAS END
+
+const float PI = 3.14159265;
+const float TAU = 6.28318531;
+const vec2 GRID = vec2(480.0, 270.0);
+const float NPRESET = 9.0;
+const int P_ST = 0, P_COV = 1, P_ROWA = 2, P_ROWS = 3, P_LINES = 4, P_GCOL = 5, P_GBLK = 6, P_GIDX = 7, P_SCENE = 8, P_GA = 9, P_GB = 10;
+
+// The state is kept in an 8-bit target, one value per texel: 3 bytes of whole seconds and
+// 1 byte of fraction (4 ms). Exact on every host and stable when re-written each frame
+// (a half-float target rounds times and would break the clock after ~30 min of show).
+vec4 packT(float t) {
+    t = max(t, 0.0);
+    float n = floor(t);
+    return vec4(floor(n / 65536.0), mod(floor(n / 256.0), 256.0), mod(n, 256.0), floor((t - n) * 255.0 + 0.5)) / 255.0;
+}
+float unpackT(vec4 e) { vec4 b = floor(e * 255.0 + 0.5); return b.x * 65536.0 + b.y * 256.0 + b.z + b.w / 255.0; }
+// texels: 0 preset shown, 1 its start, 2 waiting preset + 1, 3 request time,
+//         4 text hash, 5 last time, 6 frames since text change, 7 init flag
+float stv(int i) { return unpackT(IMG_NORM_PIXEL(st, vec2((float(i) + 0.5) / 8.0, 0.5))); }
+vec4 readState() { return vec4(floor(stv(0) + 0.5), stv(1), floor(stv(2) + 0.5), stv(3)); }
+
+float hash(float n) { return fract(sin(n * 12.9898 + 4.1414) * 43758.5453); }
+float hash2(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float sat(float x) { return clamp(x, 0.0, 1.0); }
+float easeOut(float t) { t = sat(t); return 1.0 - (1.0 - t) * (1.0 - t) * (1.0 - t); }
+float vnoise(float x) { float i = floor(x), f = fract(x); return mix(hash(i), hash(i + 1.0), f * f * (3.0 - 2.0 * f)); }
+
+// ---------------------------------------------------------------- text textures
+vec4 txt(int f, vec2 uv) {
+    if (f == 0) return IMG_NORM_PIXEL(txt0, uv);
+    if (f == 1) return IMG_NORM_PIXEL(txt1, uv);
+    if (f == 2) return IMG_NORM_PIXEL(txt2, uv);
+    if (f == 3) return IMG_NORM_PIXEL(txt3, uv);
+    if (f == 4) return IMG_NORM_PIXEL(txt4, uv);
+    return IMG_NORM_PIXEL(txt5, uv);
+}
+vec2 tsz(int f) {
+    if (f == 0) return IMG_SIZE(txt0);
+    if (f == 1) return IMG_SIZE(txt1);
+    if (f == 2) return IMG_SIZE(txt2);
+    if (f == 3) return IMG_SIZE(txt3);
+    if (f == 4) return IMG_SIZE(txt4);
+    return IMG_SIZE(txt5);
+}
+float txtA(int f, vec2 uv) {
+    if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return 0.0;
+    vec4 c = txt(f, uv);
+    return max(c.a, max(c.r, max(c.g, c.b)) * step(0.001, c.a));
+}
+// Alpha of a field texture drawn "mag" screen pixels per texture pixel: magnified edges
+// are re-sharpened (the bilinear ramp is squeezed to one screen pixel, like a distance
+// field), minified text is supersampled so it does not shimmer.
+float inkT(int f, vec2 uv, float mag) {
+    if (mag < 0.8) {
+        vec2 o = 0.3 / (max(mag, 0.05) * tsz(f));
+        return 0.25 * (txtA(f, uv + vec2(o.x, o.y)) + txtA(f, uv + vec2(-o.x, o.y))
+                     + txtA(f, uv + vec2(o.x, -o.y)) + txtA(f, uv - o));
+    }
+    float a = txtA(f, uv);
+    return sat((a - 0.5) * max(mag, 1.0) + 0.5);
+}
+
+// ---------------------------------------------------------------- measured data
+vec4 lineD(int f, int l) { return IMG_NORM_PIXEL(lines, (vec2(float(f), float(l)) + 0.5) / vec2(6.0, 8.0)); }
+float nLines(int f) { return lineD(f, 7).x; }
+float gIdx(int f, int l, float col) {
+    return IMG_NORM_PIXEL(gidx, (vec2(clamp(col, 0.0, GRID.x - 1.0), float(f * 6 + l)) + 0.5) / vec2(GRID.x, 36.0)).x;
+}
+float covAt(float c, float row) { return IMG_NORM_PIXEL(cov, (vec2(c, row) + 0.5) / vec2(GRID.x, GRID.y * 6.0)).r; }
+
+// ---------------------------------------------------------------- frame globals
+vec2 P;          // pixel (origin bottom left)
+vec2 RS;         // output size
+float U;         // 1 % of the short side
+vec4 CB;         // content box (inside the margin)
+bool LAND;       // landscape layout
+float T;         // local time of the preset, scaled by Vitesse
+float TR;        // local time, real seconds
+float OUTP;      // exit progress 0..1 while the next preset waits
+float BLINK;     // 0/1 square wave (seconds or beats)
+float G_CURLIM, G_CUR;
+float G_SX, G_LEAD, G_FILL, G_JUST, G_STAG, G_IN, G_OUT;
+vec3 C_PRI, C_SEC, C_ACC, C_TXT;
+
+void over(inout vec4 acc, vec3 c, float a) { a = sat(a); acc = vec4(c * a, a) + acc * (1.0 - a); }
+
+// Visible from local time d on, gone when the exit passes k (0 = first to leave).
+float vis(float d, float k) { return step(d, T) * step(OUTP, k * 0.85 + 0.0001); }
+// Same, with a few flickering frames when it appears (CRT power-on feel).
+float visF(float d, float k) {
+    float v = vis(d, k);
+    float age = T - d;
+    return age < 0.18 ? v * step(0.35, hash(floor(TR * 40.0) + d * 13.0)) : v;
+}
+
+// ---------------------------------------------------------------- 2D helpers (pixels)
+float sdBox(vec2 p, vec4 b) {
+    vec2 c = (b.xy + b.zw) * 0.5, h = (b.zw - b.xy) * 0.5;
+    vec2 q = abs(p - c) - h;
+    return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0);
+}
+float sdCham(vec2 p, vec4 b, float c) {
+    vec2 m = (b.xy + b.zw) * 0.5, h = (b.zw - b.xy) * 0.5;
+    vec2 q = abs(p - m);
+    return max(sdBox(p, b), (q.x + q.y - (h.x + h.y - c)) * 0.70710678);
+}
+float fillA(float d) { return sat(0.5 - d); }
+float boxA(vec4 b) { return fillA(sdBox(P, b)); }
+float frameA(vec4 b, float th) { return fillA(abs(sdBox(P, b) + th * 0.5) - th * 0.5); }
+float chamA(vec4 b, float c) { return fillA(sdCham(P, b, c)); }
+float chamFrameA(vec4 b, float c, float th) { return fillA(abs(sdCham(P, b, c) + th * 0.5) - th * 0.5); }
+float segA(vec2 a, vec2 b, float th) {
+    vec2 pa = P - a, ba = b - a;
+    float h = sat(dot(pa, ba) / max(dot(ba, ba), 1e-4));
+    return fillA(length(pa - ba * h) - th * 0.5);
+}
+// Frame that draws itself from the four corners (k = 0..1).
+float growFrameA(vec4 b, float th, float k) {
+    float a = frameA(b, th);
+    if (k >= 1.0) return a;
+    float dx = min(P.x - b.x, b.z - P.x), dy = min(P.y - b.y, b.w - P.y);
+    bool horiz = dy < th * 1.5;
+    float m = horiz ? step(dx, k * (b.z - b.x) * 0.5) : step(dy, k * (b.w - b.y) * 0.5);
+    return a * m;
+}
+float growMask(vec4 b, float th, float k) {
+    if (k >= 1.0) return 1.0;
+    float dx = min(P.x - b.x, b.z - P.x), dy = min(P.y - b.y, b.w - P.y);
+    return dy < th * 3.0 ? step(dx, k * (b.z - b.x) * 0.5) : step(dy, k * (b.w - b.y) * 0.5);
+}
+float bracketsA(vec4 b, float L, float th) {
+    float a = frameA(b, th);
+    float dx = min(P.x - b.x, b.z - P.x), dy = min(P.y - b.y, b.w - P.y);
+    return a * step(min(dx, dy), L) * step(max(dx, dy) - min(dx, dy), L) * (1.0 - step(L, dx) * step(L, dy));
+}
+float stripesA(float per, float off) { return step(0.5, fract((P.x + P.y) / per + off)); }
+float ticksA(vec4 b, float stepPx, float len, float th) {
+    if (P.x < b.x || P.x > b.z) return 0.0;
+    float m = abs(mod(P.x - b.x + stepPx * 0.5, stepPx) - stepPx * 0.5);
+    float big = step(mod(floor((P.x - b.x + stepPx * 0.5) / stepPx), 5.0), 0.5);
+    float l = len * (0.55 + 0.45 * big);
+    return fillA(m - th * 0.5) * step(b.y, P.y) * step(P.y, b.y + l);
+}
+// Hexagon grid: x = distance to the cell edge (0 at the border), yz = cell centre.
+vec3 hexG(vec2 p, float s) {
+    vec2 r = vec2(1.0, 1.7320508);
+    vec2 h = r * 0.5;
+    vec2 q = p / s;
+    vec2 a = mod(q, r) - h, b = mod(q - h, r) - h;
+    vec2 g = dot(a, a) < dot(b, b) ? a : b;
+    vec2 ag = abs(g);
+    float d = max(dot(ag, normalize(r)), ag.x);
+    return vec3((0.5 - d) * s, q - g);
+}
+float chevA(vec2 o, float h, float th) {   // ">" pointing right, origin = tip
+    vec2 q = P - o;
+    float d = abs(q.x + abs(q.y)) - th * 0.5;
+    return fillA(d) * step(abs(q.y), h * 0.5) * step(q.x, 0.5);
+}
+
+// ---------------------------------------------------------------- atlas labels
+vec2 ATS;
+float atlasA(vec2 uv, float mag) {
+    if (mag < 0.8) {
+        vec2 o = 0.3 / (max(mag, 0.05) * ATS);
+        return 0.25 * (IMG_NORM_PIXEL(atlas, uv + o).r + IMG_NORM_PIXEL(atlas, uv - o).r
+                     + IMG_NORM_PIXEL(atlas, uv + vec2(o.x, -o.y)).r + IMG_NORM_PIXEL(atlas, uv + vec2(-o.x, o.y)).r);
+    }
+    return sat((IMG_NORM_PIXEL(atlas, uv).r - 0.5) * max(mag, 1.0) + 0.5);
+}
+float labW(vec4 r, float h) { vec2 s = (r.zw - r.xy) * ATS; return h * s.x / s.y * G_SX; }
+// Atlas word with its ink box h px tall; ax = 0 left, 0.5 centre, 1 right; pos.y = bottom.
+float lab(vec4 r, vec2 pos, float h, float ax) {
+    float w = labW(r, h);
+    vec2 l = (P - vec2(pos.x - ax * w, pos.y)) / vec2(w, h);
+    if (l.x < 0.0 || l.y < 0.0 || l.x > 1.0 || l.y > 1.0) return 0.0;
+    vec2 s = (r.zw - r.xy) * ATS;
+    return atlasA(mix(r.xy, r.zw, l), h / s.y);
+}
+// Atlas word fitted in a box (contain), aligned by ax, centred vertically.
+float labFit(vec4 r, vec4 b, float ax) {
+    float bw = b.z - b.x, bh = b.w - b.y;
+    float h = min(bh, bw / max(labW(r, 1.0), 1e-3));
+    float x = mix(b.x, b.z, ax);
+    return lab(r, vec2(x, (b.y + b.w - h) * 0.5), h, ax);
+}
+vec4 digitR(float d) {
+    vec4 r = A_DIGITS;
+    float cw = (r.z - r.x) / A_DIGIT_N;
+    return vec4(r.x + d * cw, r.y, r.x + (d + 1.0) * cw, r.w);
+}
+// Number with nInt integer digits (zero padded) and nDec decimals.
+float numA(float v, float nInt, float nDec, vec2 pos, float h) {
+    float cw = labW(digitR(0.0), h);
+    float k = floor((P.x - pos.x) / cw);
+    float nC = nInt + (nDec > 0.5 ? nDec + 1.0 : 0.0);
+    if (k < 0.0 || k >= nC || P.y < pos.y || P.y > pos.y + h) return 0.0;
+    v = abs(v);
+    float ch;
+    if (k < nInt) ch = floor(mod(v / pow(10.0, nInt - 1.0 - k), 10.0));
+    else if (k < nInt + 0.5) ch = 10.0;
+    else ch = floor(mod(v * pow(10.0, k - nInt), 10.0));
+    return lab(digitR(ch), vec2(pos.x + k * cw, pos.y), h, 0.0);
+}
+float numW(float nChars, float h) { return nChars * labW(digitR(0.0), h); }
+// Block of random digits that changes a few times per second (data noise).
+float dataA(vec4 b, float h, float rate) {
+    if (P.x < b.x || P.x > b.z || P.y < b.y || P.y > b.w) return 0.0;
+    float cw = labW(digitR(0.0), h);
+    float lh = h * 1.55;
+    vec2 cell = floor((vec2(P.x - b.x, b.w - P.y)) / vec2(cw, lh));
+    float yb = b.w - (cell.y + 1.0) * lh + (lh - h) * 0.5;
+    float r = hash2(cell + floor(TR * rate + hash(cell.y) * 3.0));
+    float ch = r < 0.08 ? 13.0 : r < 0.12 ? 10.0 : floor(r * 10.0);
+    float on = step(0.12, hash2(cell * 1.7 + 3.1));
+    return on * lab(digitR(ch), vec2(b.x + cell.x * cw, yb), h, 0.0);
+}
+
+// 7-segment digit (Eva activity timer). q in the cell (0..1), returns (lit, ghost).
+vec2 seg7(float d, vec2 q, float th, float aspect, float hpx) {
+    q.x += (q.y - 0.5) * 0.10;
+    vec2 p = vec2(q.x * aspect, q.y);
+    float w = aspect;
+    float m;
+    if (d < 0.5) m = 63.0; else if (d < 1.5) m = 6.0; else if (d < 2.5) m = 91.0; else if (d < 3.5) m = 79.0;
+    else if (d < 4.5) m = 102.0; else if (d < 5.5) m = 109.0; else if (d < 6.5) m = 125.0; else if (d < 7.5) m = 7.0;
+    else if (d < 8.5) m = 127.0; else m = 111.0;
+    float lit = 0.0, ghost = 0.0;
+    for (int k = 0; k < 7; k++) {
+        float fk = float(k);
+        vec2 c; vec2 h;
+        if (k == 0) { c = vec2(w * 0.5, 1.0 - th * 0.5); h = vec2(w * 0.5 - th, th * 0.5); }
+        else if (k == 1) { c = vec2(w - th * 0.5, 0.75); h = vec2(th * 0.5, 0.25 - th * 0.75); }
+        else if (k == 2) { c = vec2(w - th * 0.5, 0.25); h = vec2(th * 0.5, 0.25 - th * 0.75); }
+        else if (k == 3) { c = vec2(w * 0.5, th * 0.5); h = vec2(w * 0.5 - th, th * 0.5); }
+        else if (k == 4) { c = vec2(th * 0.5, 0.25); h = vec2(th * 0.5, 0.25 - th * 0.75); }
+        else if (k == 5) { c = vec2(th * 0.5, 0.75); h = vec2(th * 0.5, 0.25 - th * 0.75); }
+        else { c = vec2(w * 0.5, 0.5); h = vec2(w * 0.5 - th, th * 0.5); }
+        vec2 qq = abs(p - c);
+        // pointed ends like a real LCD segment
+        float dd = max(qq.x - h.x, qq.y - h.y);
+        dd = max(dd, (qq.x + qq.y) - (max(h.x, h.y) + min(h.x, h.y)) );
+        float a = sat(0.5 - dd * hpx);
+        float on = mod(floor(m / pow(2.0, fk)), 2.0);
+        lit = max(lit, a * on);
+        ghost = max(ghost, a);
+    }
+    return vec2(lit, ghost);
+}
+
+// ---------------------------------------------------------------- text field layout
+// Lays out the lines of field f inside box (pixels) and returns, for the current pixel:
+// x = ink alpha (revealed), y = block alpha (typing cursor, decoding), z = flash,
+// w = 1 inside a line rectangle.
+// al: 0 left, 1 centre, 2 right, 3 justified (every line as wide as the box, Eva cards).
+// va: 0 bottom, 1 middle, 2 top. sx: horizontal stretch. capH: max line height in px
+// (0 = fill the box). tIn: time since the field came in. inSt/outSt: animation styles.
+vec4 fieldA(int f, vec4 box, float al, float va, float sx, float capH, float tIn, float inSt, float outSt) {
+    vec4 res = vec4(0.0);
+    if (P.x < box.x - 1.0 || P.x > box.z + 1.0 || P.y < box.y - 1.0 || P.y > box.w + 1.0) return res;
+    float n = nLines(f);
+    if (n < 0.5) return res;
+    if (G_JUST > 0.5) al = G_JUST - 1.0;
+    bool just = al > 2.5;
+    vec2 cp = tsz(f) / GRID;
+    float bw = box.z - box.x, bh = box.w - box.y;
+    vec4 D[6];
+    float GL[6];
+    float maxW = 0.0, sumH = 0.0, maxH = 0.0;
+    for (int i = 0; i < 6; i++) {
+        D[i] = lineD(f, i);
+        GL[i] = 0.0;
+        if (float(i) >= n) continue;
+        float w = (D[i].y - D[i].x + 1.0) * cp.x * sx;
+        float h = (D[i].w - D[i].z + 1.0) * cp.y;
+        maxW = max(maxW, w); sumH += h; maxH = max(maxH, h);
+        GL[i] = gIdx(f, i, D[i].y - 1.0);
+    }
+    float S = min(bw / maxW, bh / (sumH + (n - 1.0) * G_LEAD * maxH));
+    if (capH > 0.0) S = min(S, capH / maxH);
+    float gap = G_LEAD * maxH * S * G_FILL;
+    float kJ = 1.0;
+    float lim = capH > 0.0 ? capH * 1.8 : bh * 0.8;
+    if (just) {
+        float tot = (n - 1.0) * gap;
+        for (int i = 0; i < 6; i++) {
+            if (float(i) >= n) break;
+            float w = (D[i].y - D[i].x + 1.0) * cp.x * sx;
+            float h = (D[i].w - D[i].z + 1.0) * cp.y;
+            tot += min(bw / w, lim / h) * h;
+        }
+        kJ = min(1.0, bh / tot) * G_FILL;
+    }
+    float Hb = (n - 1.0) * gap;
+    for (int i = 0; i < 6; i++) {
+        if (float(i) >= n) break;
+        float w = (D[i].y - D[i].x + 1.0) * cp.x * sx;
+        float h = (D[i].w - D[i].z + 1.0) * cp.y;
+        Hb += (just ? min(bw / w, lim / h) * kJ : S * G_FILL) * h;
+    }
+    float top = va > 1.5 ? box.w : (va > 0.5 ? (box.y + box.w + Hb) * 0.5 : box.y + Hb);
+    float gPrev = 0.0;
+    float cps = 26.0;
+    for (int i = 0; i < 6; i++) {
+        if (float(i) >= n) break;
+        vec4 d = D[i];
+        float w = (d.y - d.x + 1.0) * cp.x * sx;
+        float h = (d.w - d.z + 1.0) * cp.y;
+        float sc = just ? min(bw / w, lim / h) * kJ : S * G_FILL;
+        float ws = w * sc, hs = h * sc;
+        float y0 = top - hs;
+        float x0 = (al < 0.5 || just) ? box.x : (al < 1.5 ? (box.x + box.z - ws) * 0.5 : box.z - ws);
+        float fi = float(i);
+        float G = GL[i];
+        // Typing cursor after the last line once everything is typed.
+        if (inSt > 1.5 && inSt < 2.5 && fi > n - 1.5 && P.y >= y0 && P.y <= top) {
+            float cx = x0 + ws + hs * 0.12;
+            float done = tIn * cps - (gPrev + G);
+            if (P.x >= cx && P.x <= cx + hs * 0.42 && done > 0.0 && (G_CUR <= 0.0 || done < G_CUR) && OUTP < 0.01)
+                res.y = max(res.y, step(0.5, fract(TR * 1.6)));
+        }
+        if (P.y >= y0 && P.y <= top && P.x >= x0 && P.x <= x0 + ws) {
+            float lx = (P.x - x0) / ws, ly = (P.y - y0) / hs;
+            vec2 g = vec2(d.x - 0.5 + lx * (d.y - d.x + 1.0), d.z - 0.5 + ly * (d.w - d.z + 1.0));
+            float a = inkT(f, g / GRID, min(sc, sc * sx));
+            float gi = gIdx(f, i, floor(g.x));
+            float tl = tIn - fi * G_STAG * 0.22;
+            float v = 1.0, blk = 0.0, fl = 0.0;
+            if (inSt > 0.5 && inSt < 1.5) {            // Coupe: hard cut + one flash frame
+                v = step(0.0, tl); fl = v * (1.0 - smoothstep(0.0, 0.1, tl));
+            } else if (inSt < 2.5) {                    // Frappe: glyph by glyph, block cursor
+                float nr = tIn * cps - gPrev;
+                v = step(gi, nr) * step(0.0, nr);
+                blk = (gi > floor(nr) + 0.5 && gi < floor(nr) + 1.5 && nr >= 0.0 && nr < G) ? 1.0 : 0.0;
+                fl = v * sat(1.0 - (nr - gi) / 3.0) * 0.8;
+            } else if (inSt < 3.5) {                    // Decodage: blocks resolve into glyphs
+                float th = hash(float(f) * 97.0 + fi * 13.0 + gi * 1.31) * 0.9;
+                v = step(th + 0.3, tl);
+                blk = step(th * 0.5, tl) * (1.0 - v) * (0.25 + 0.75 * step(0.45, hash(floor(TR * 24.0) + gi * 7.0 + fi)));
+                fl = v * (1.0 - smoothstep(0.0, 0.15, tl - th - 0.3));
+            } else if (inSt < 4.5) {                    // Balayage: wipe with a bright bar
+                float e = tl / 0.45;
+                v = step(lx, e);
+                blk = step(lx, e) * step(e - 0.05, lx) * step(e, 1.05);
+            } else {                                    // Clignotement
+                v = tl < 0.0 ? 0.0 : (tl > 0.5 ? 1.0 : step(0.45, hash(floor(tl * 22.0) + fi * 3.0)));
+            }
+            if (OUTP > 0.0) {
+                float o = OUTP;
+                if (outSt < 1.5) v *= step(o, 0.1 + 0.75 * (n - 1.0 - fi) / max(n - 1.0, 1.0));
+                else if (outSt < 2.5) {
+                    float nr2 = G * (1.0 - sat(o * 1.3 - fi * 0.06));
+                    v *= step(gi, nr2);
+                    blk = max(blk * step(o, 0.0), (gi > floor(nr2) + 0.5 && gi < floor(nr2) + 1.5 && o < 0.95) ? 1.0 : 0.0);
+                } else if (outSt < 3.5) {
+                    float e = 1.0 - o * 1.15;
+                    v *= step(lx, e);
+                    blk = max(blk, step(lx, e + 0.05) * step(e, lx) * step(0.0, e));
+                } else v *= o < 0.75 ? step(0.4, hash(floor(o * 30.0) + fi)) : 0.0;
+                fl = 0.0;
+            }
+            res.x = a * v;
+            res.y = max(res.y, blk);
+            res.z = fl;
+            res.w = 1.0;
+            return res;
+        }
+        gPrev += G;
+        top = y0 - gap;
+    }
+    return res;
+}
+// Number of glyphs of a field (for sequential typing).
+float glyphs(int f) {
+    float n = nLines(f), s = 0.0;
+    for (int i = 0; i < 6; i++) {
+        if (float(i) >= n) break;
+        s += gIdx(f, i, lineD(f, i).y - 1.0);
+    }
+    return s;
+}
+// Text slots. Text boxes never overlap, so the presets only note the one box that
+// holds the current pixel and the text is laid out once, after the interface is drawn.
+// (Calling the layout at every site made the shader too big for the D3D compilers.)
+bool S_HIT;
+int S_F;
+vec4 S_BOX, S_PAR, S_ANI;
+vec3 S_COL;
+float S_MUL;
+void tfm(int f, vec4 box, float al, float va, float sx, float capH, float delay, float defIn, float defOut, vec3 col, float mul) {
+    if (S_HIT || P.x < box.x - 1.0 || P.x > box.z + 1.0 || P.y < box.y - 1.0 || P.y > box.w + 1.0) return;
+    S_HIT = true; S_F = f; S_BOX = box;
+    S_PAR = vec4(al, va, sx * G_SX, capH);
+    S_ANI = vec4(T - delay, G_IN > 0.5 ? G_IN : defIn, G_OUT > 0.5 ? G_OUT : defOut, G_CURLIM);
+    S_COL = col; S_MUL = mul;
+}
+void tf(int f, vec4 box, float al, float va, float sx, float capH, float delay, float defIn, float defOut, vec3 col) {
+    tfm(f, box, al, va, sx, capH, delay, defIn, defOut, col, 1.0);
+}
+void ink(inout vec4 acc, vec4 r, vec3 col) {
+    over(acc, col, r.y * 0.85);
+    over(acc, mix(col, vec3(1.0), r.z * 0.75), r.x);
+}
+// Repeats the first line of field f (or an atlas word when f is empty) along a band.
+float tickerF(int f, vec4 r, vec4 band, float spd, float hFrac) {
+    if (P.y < band.y || P.y > band.w) return 0.0;
+    float hh = (band.w - band.y) * hFrac;
+    float yb = (band.y + band.w - hh) * 0.5;
+    float ly = (P.y - yb) / hh;
+    if (ly < 0.0 || ly > 1.0) return 0.0;
+    bool user = nLines(f) > 0.5;
+    vec4 d = lineD(f, 0);
+    vec2 cp = tsz(f) / GRID;
+    float s = user ? hh / ((d.w - d.z + 1.0) * cp.y) : 1.0;
+    float w = user ? (d.y - d.x + 1.0) * cp.x * s * G_SX : labW(r, hh);
+    float gp = hh * 1.6;
+    float x = mod(P.x - band.x + TR * spd, w + gp);
+    if (x > w) {   // small square between repeats
+        float c = w + gp * 0.5;
+        return fillA(max(abs(x - c), abs(P.y - (yb + hh * 0.5))) - hh * 0.16);
+    }
+    if (!user) return atlasA(mix(r.xy, r.zw, vec2(x / w, ly)), hh / ((r.w - r.y) * ATS.y));
+    vec2 g = vec2(d.x - 0.5 + x / w * (d.y - d.x + 1.0), d.z - 0.5 + ly * (d.w - d.z + 1.0));
+    return inkT(f, g / GRID, s);
+}
+bool has(int f) { return nLines(f) > 0.5; }
+vec4 bx(float x0, float y0, float x1, float y1) { return vec4(CB.x + x0 * (CB.z - CB.x), CB.y + y0 * (CB.w - CB.y), CB.x + x1 * (CB.z - CB.x), CB.y + y1 * (CB.w - CB.y)); }
+vec4 inset(vec4 b, float m) { return b + vec4(m, m, -m, -m); }
+
+float blinkAmt();
+
+// Field roles: 0 Titre, 1 Sous-titre, 2 Kanji / grand, 3 Label, 4 Infos, 5 Bandeau.
+
+// ================================================================ 0 Carte titre
+vec4 pTitle() {
+    vec4 acc = vec4(0.0);
+    bool hk = has(2);
+    vec4 bK, bL, bT, bS;
+    if (LAND) {
+        bK = bx(0.0, 0.27, 0.60, 1.0);
+        bL = bx(0.65, 0.32, 1.0, 0.40);
+        bT = bx(0.65, 0.0, 1.0, 0.29);
+        bS = bx(0.0, 0.0, 0.58, 0.17);
+        if (!hk) { bL = bx(0.0, 0.88, 0.5, 1.0); bT = bx(0.0, 0.22, 1.0, 0.84); bS = bx(0.0, 0.0, 0.7, 0.15); }
+    } else {
+        bK = bx(0.0, 0.44, 1.0, 1.0);
+        bL = bx(0.0, 0.34, 1.0, 0.40);
+        bT = bx(0.0, 0.12, 1.0, 0.32);
+        bS = bx(0.0, 0.0, 1.0, 0.09);
+        if (!hk) { bL = bx(0.0, 0.9, 1.0, 1.0); bT = bx(0.0, 0.2, 1.0, 0.86); }
+    }
+    float h = CB.w - CB.y;
+    // The card flickers very slightly, like film.
+    vec3 c = C_TXT * (0.96 + 0.04 * vnoise(TR * 18.0));
+    tf(2, bK, 3.0, 2.0, 0.86, 0.0, 0.0, 1.0, 1.0, c);
+    tf(3, bL, 0.0, 0.0, 1.0, h * 0.075, 0.55, 1.0, 1.0, c);
+    tf(0, bT, 3.0, hk ? 0.0 : 1.0, 0.86, 0.0, hk ? 0.9 : 0.0, 1.0, 1.0, c);
+    tf(1, bS, 0.0, 0.0, 1.0, h * 0.06, 1.3, 1.0, 1.0, c * 0.92);
+    return acc;
+}
+
+// ================================================================ 1 Alerte
+vec4 pAlert() {
+    vec4 acc = vec4(0.0);
+    float h = CB.w - CB.y, w = CB.z - CB.x;
+    float bh = max(h * 0.11, U * 7.0);
+    float m = CB.y * 0.5;
+    // Two hazard bands sliding in from opposite sides.
+    for (int k = 0; k < 2; k++) {
+        float dir = k == 0 ? -1.0 : 1.0;
+        float yb = k == 0 ? RS.y - m - bh : m;
+        float sl = (1.0 - easeOut((T - 0.05 * float(k)) / 0.35)) * RS.x * dir;
+        float vv = vis(0.0, k == 0 ? 0.9 : 0.95);
+        vec2 sp = P;
+        P.x -= sl;
+        vec4 band = vec4(-10.0, yb, RS.x + 10.0, yb + bh);
+        float inB = boxA(band) * vv;
+        over(acc, vec3(0.0), inB * 0.88);
+        float edge = bh * 0.2;
+        float st = stripesA(bh * 0.55, TR * 0.6 * dir);
+        float sA = (boxA(vec4(band.x, band.y, band.z, band.y + edge)) + boxA(vec4(band.x, band.w - edge, band.z, band.w))) * vv;
+        over(acc, C_ACC, sA * st);
+        vec4 mid = vec4(band.x, band.y + edge * 1.4, band.z, band.w - edge * 1.4);
+        over(acc, C_PRI, tickerF(5, A_EMERG, mid, U * 9.0 * dir, 0.78) * vv);
+        P = sp;
+    }
+    // Central warning panel.
+    vec4 pb;
+    if (LAND) { float pw = min(w * 0.6, h * 1.25); pb = vec4((RS.x - pw) * 0.5, CB.y + bh + h * 0.12, (RS.x + pw) * 0.5, CB.w - bh - h * 0.06); }
+    else pb = vec4(CB.x, CB.y + bh + h * 0.2, CB.z, CB.w - bh - h * 0.12);
+    float ch = U * 3.0;
+    float pv = vis(0.25, 0.6);
+    float grow = easeOut((T - 0.25) / 0.4);
+    bool inv = BLINK > 0.5 && T > 1.4 && OUTP < 0.01;
+    float invA = inv ? 1.0 : 0.0;
+    vec3 fillC = mix(vec3(0.0), C_PRI, invA);
+    over(acc, fillC, chamA(pb, ch) * pv * (0.7 + 0.3 * invA));
+    // Faint hexagons inside the panel.
+    vec3 hx = hexG(P, U * 3.2);
+    over(acc, C_PRI, fillA(hx.x - U * 0.12) * 0.18 * (1.0 - invA) * pv * chamA(pb, ch) * G_FILL);
+    over(acc, C_PRI, chamFrameA(pb, ch, U * 0.45) * pv * growMask(pb, U * 0.45, grow));
+    over(acc, C_PRI, chamFrameA(inset(pb, -U * 1.1), ch * 1.3, U * 0.2) * pv);
+    vec4 tb = inset(pb, U * 3.0);
+    float th = tb.w - tb.y;
+    vec4 bK = vec4(tb.x, tb.y + th * 0.36, tb.z, tb.w);
+    vec4 bT = vec4(tb.x, tb.y, tb.z, tb.y + th * 0.30);
+    vec3 tc = mix(C_PRI, vec3(0.0), invA);
+    if (has(2)) tf(2, bK, 1.0, 1.0, 1.0, 0.0, 0.55, 1.0, 1.0, tc);
+    else over(acc, tc, labFit(A_KEIKOKU, bK, 0.5) * vis(0.55, 0.5));
+    if (has(0)) tf(0, bT, 1.0, 1.0, 1.0, 0.0, 0.8, 4.0, 3.0, tc);
+    else over(acc, tc, labFit(A_WARNING, bT, 0.5) * vis(0.8, 0.5));
+    // Tab above the panel (label) and subtitle under it.
+    vec4 tab = vec4(pb.x, pb.w + U * 1.0, pb.x + (pb.z - pb.x) * 0.42, pb.w + U * 1.0 + max(U * 3.4, h * 0.045));
+    float tv = visF(0.45, 0.4);
+    over(acc, C_PRI, boxA(tab) * tv);
+    if (has(3)) tf(3, inset(tab, U * 0.6), 0.0, 1.0, 1.0, 0.0, 0.45, 1.0, 1.0, vec3(0.0));
+    else over(acc, vec3(0.0), labFit(A_CAUTION, inset(tab, U * 0.6), 0.0) * tv);
+    vec4 sb = vec4(pb.x, pb.y - U * 1.0 - max(U * 3.6, h * 0.05), pb.z, pb.y - U * 1.0);
+    tf(1, sb, 1.0, 2.0, 1.0, 0.0, 1.1, 2.0, 2.0, C_PRI);
+    // Side columns: caution stack on the left, info lines on the right.
+    if (LAND && pb.x - CB.x > U * 12.0) {
+        vec4 lc = vec4(CB.x, pb.y, pb.x - U * 3.0, pb.w);
+        vec4 rc = vec4(pb.z + U * 3.0, pb.y, CB.z, pb.w);
+        float lh = U * 2.6;
+        for (int k = 0; k < 6; k++) {
+            float fk = float(k);
+            float yb = lc.w - (fk + 1.0) * (lh * 2.4);
+            if (yb < lc.y) break;
+            float v = visF(0.6 + fk * 0.08, 0.3 + fk * 0.05);
+            bool on = mod(fk + floor(TR * 2.0), 3.0) < 0.5 && blinkAmt() > 0.0;
+            vec4 cell = vec4(lc.x, yb, lc.z, yb + lh * 1.8);
+            over(acc, C_PRI, frameA(cell, U * 0.2) * v);
+            over(acc, C_PRI, boxA(cell) * v * (on ? 0.9 : 0.0));
+            over(acc, on ? vec3(0.0) : C_PRI, labFit(k == 2 ? A_DANGER : (k == 4 ? A_EMERG : A_CAUTION), inset(cell, lh * 0.35), 0.5) * v);
+        }
+        if (has(4)) tf(4, rc, 0.0, 2.0, 1.0, U * 3.2, 0.9, 2.0, 2.0, C_PRI);
+        else over(acc, C_PRI, dataA(rc, U * 2.0, 6.0) * vis(0.9, 0.4) * 0.8);
+        over(acc, C_PRI, vis(0.6, 0.3) * (segA(vec2(lc.z + U * 1.5, lc.y), vec2(lc.z + U * 1.5, lc.w), U * 0.2) + segA(vec2(rc.x - U * 1.5, rc.y), vec2(rc.x - U * 1.5, rc.w), U * 0.2)));
+    } else if (has(4)) {
+        tf(4, vec4(pb.x, CB.y + bh + U * 2.0, pb.z, sb.y - U * 1.0), 0.0, 2.0, 1.0, U * 3.0, 0.9, 2.0, 2.0, C_PRI);
+    }
+    return acc;
+}
+
+// ================================================================ 2 MAGI
+vec4 pMagi() {
+    vec4 acc = vec4(0.0);
+    float h = CB.w - CB.y;
+    vec4 em = LAND ? bx(0.0, 0.0, 0.6, 1.0) : bx(0.0, 0.42, 1.0, 1.0);
+    vec4 info = LAND ? bx(0.65, 0.0, 1.0, 1.0) : bx(0.0, 0.0, 1.0, 0.38);
+    vec2 c = (em.xy + em.zw) * 0.5;
+    float S = min(em.z - em.x, (em.w - em.y) * 1.15);
+    vec2 ph = vec2(S * 0.215, S * 0.15);
+    vec2 cen[3];
+    cen[0] = c + vec2(0.0, S * 0.22);              // BALTHASAR
+    cen[1] = c + vec2(-S * 0.25, -S * 0.17);       // CASPER
+    cen[2] = c + vec2(S * 0.25, -S * 0.17);        // MELCHIOR
+    float approve = 0.0;
+    float decided = 0.0;
+    // Links between the three units and the centre.
+    float lv = vis(0.2, 0.5);
+    for (int i = 0; i < 3; i++) over(acc, C_PRI, segA(c, cen[i], U * 0.25) * lv * 0.7);
+    over(acc, C_PRI, fillA(abs(length(P - c) - S * 0.07) - U * 0.15) * lv);
+    over(acc, C_PRI, labFit(A_MAGI, vec4(c - vec2(S * 0.055, S * 0.025), c + vec2(S * 0.055, S * 0.025)), 0.5) * lv);
+    for (int i = 0; i < 3; i++) {
+        float fi = float(i);
+        vec2 q = cen[i];
+        vec4 b = vec4(q - ph, q + ph);
+        float dt = 2.4 + fi * 0.55;
+        bool done = T > dt;
+        float yes = step(0.38, hash(seed * 3.17 + fi * 1.9));
+        approve += done ? yes : 0.0;
+        decided += done ? 1.0 : 0.0;
+        // Cut the corners that face the centre (BALTHASAR is a trapezoid).
+        float sd = sdBox(P, b);
+        float cutC = S * 0.075;
+        if (i == 0) sd = max(sd, (abs(P.x - q.x) - ph.x - (P.y - (q.y - ph.y)) + cutC) * 0.7071);
+        else if (i == 1) sd = max(sd, ((P.x - (q.x + ph.x)) + (P.y - (q.y + ph.y)) + cutC) * 0.7071);
+        else sd = max(sd, (((q.x - ph.x) - P.x) + (P.y - (q.y + ph.y)) + cutC) * 0.7071);
+        float v = visF(0.35 + fi * 0.15, 0.5 + fi * 0.1);
+        float pend = done ? 0.0 : 1.0;
+        float fl = pend * step(0.5, fract(TR * 3.0 + fi * 0.33));
+        vec3 col = done ? (yes > 0.5 ? C_PRI : C_ACC) : C_SEC;
+        float body = fillA(sd);
+        over(acc, col, body * v * (done ? 0.92 : 0.18 + 0.2 * fl));
+        over(acc, done ? col : C_SEC, fillA(abs(sd + U * 0.2) - U * 0.2) * v);
+        // Name on top, verdict in the middle.
+        vec4 nm = i == 0 ? A_BAL : (i == 1 ? A_CAS : A_MEL);
+        vec3 txc = done ? vec3(0.0) : C_SEC;
+        over(acc, txc, labFit(nm, vec4(b.x + ph.x * 0.25, b.w - ph.y * 0.5, b.z - ph.x * 0.25, b.w - ph.y * 0.18), 0.5) * v);
+        vec4 vb = vec4(b.x + ph.x * 0.3, b.y + ph.y * 0.35, b.z - ph.x * 0.3, b.y + ph.y * 1.2);
+        vec4 word = done ? (yes > 0.5 ? A_SHONIN : A_HIKETSU) : A_SHINGI;
+        over(acc, txc, labFit(word, vb, 0.5) * v * (done ? 1.0 : 0.45 + 0.55 * fl));
+    }
+    // Info column.
+    float ih = info.w - info.y;
+    vec4 r0 = vec4(info.x, info.w - ih * 0.08, info.z, info.w);
+    float v0 = visF(0.1, 0.8);
+    over(acc, C_SEC, boxA(vec4(r0.x, r0.y, r0.x + (r0.z - r0.x) * 0.3, r0.w)) * v0);
+    over(acc, vec3(0.0), labFit(A_TEISO, inset(vec4(r0.x, r0.y, r0.x + (r0.z - r0.x) * 0.3, r0.w), U * 0.6), 0.5) * v0);
+    over(acc, C_SEC, segA(vec2(r0.x, r0.y - U * 0.6), vec2(r0.z, r0.y - U * 0.6), U * 0.2) * v0);
+    vec4 r1 = vec4(info.x, info.w - ih * 0.34, info.z, r0.y - U * 1.6);
+    tf(0, r1, 0.0, 2.0, 1.0, 0.0, 0.3, 3.0, 2.0, C_SEC);
+    vec4 r2 = vec4(info.x, r1.y - U * 1.5 - ih * 0.07, info.z, r1.y - U * 1.5);
+    float v2 = visF(1.0, 0.7);
+    over(acc, C_SEC, boxA(vec4(r2.x, r2.y, r2.x + (r2.z - r2.x) * 0.3, r2.w)) * v2);
+    over(acc, vec3(0.0), labFit(A_KETSUGI, inset(vec4(r2.x, r2.y, r2.x + (r2.z - r2.x) * 0.3, r2.w), U * 0.6), 0.5) * v2);
+    vec4 r3 = vec4(info.x, r2.y - U * 1.0 - ih * 0.15, info.z, r2.y - U * 1.0);
+    bool allD = decided > 2.5;
+    vec4 verdict = allD ? (approve > 1.5 ? A_KAKETSU : A_HIKETSU) : A_SHINGI;
+    vec3 vc = allD ? (approve > 1.5 ? C_PRI : C_ACC) : C_SEC;
+    float vf = allD ? (T < 4.4 ? step(0.5, fract(TR * 6.0)) : 1.0) : 0.35 + 0.4 * step(0.5, fract(TR * 2.0));
+    over(acc, vc, labFit(verdict, r3, 0.0) * v2 * vf);
+    vec4 r4 = vec4(info.x, r3.y - U * 1.2 - ih * 0.06, info.z, r3.y - U * 1.2);
+    float v4 = visF(1.2, 0.6);
+    float cw = labW(A_CODE, r4.w - r4.y);
+    over(acc, C_SEC, lab(A_CODE, r4.xy, r4.w - r4.y, 0.0) * v4);
+    tf(3, vec4(r4.x + cw + U * 1.5, r4.y, r4.z, r4.w), 0.0, 1.0, 1.0, 0.0, 1.2, 2.0, 2.0, C_SEC);
+    vec4 r5 = vec4(info.x, info.y + ih * 0.09, info.z, r4.y - U * 1.5);
+    if (has(4)) tf(4, r5, 0.0, 2.0, 1.0, U * 3.0, 1.4, 2.0, 2.0, C_SEC);
+    else over(acc, C_SEC, dataA(r5, U * 1.9, 5.0) * vis(1.4, 0.5) * 0.6);
+    tf(1, vec4(info.x, info.y, info.z, info.y + ih * 0.07), 0.0, 0.0, 1.0, 0.0, 1.6, 2.0, 2.0, C_SEC);
+    return acc;
+}
+
+// ================================================================ 3 Sound Only
+vec4 pSeele() {
+    vec4 acc = vec4(0.0);
+    float h = CB.w - CB.y, w = CB.z - CB.x;
+    float N = 4.0 + floor(uiAmt * 4.0 + 0.5);
+    float rows = LAND ? 1.0 : 2.0;
+    float perRow = ceil(N / rows);
+    vec4 area = LAND ? bx(0.0, 0.22, 1.0, 1.0) : bx(0.0, 0.2, 1.0, 1.0);
+    float aw = area.z - area.x, ah = area.w - area.y;
+    float mw = min(aw / (perRow * 1.22), ah / rows / 3.8);
+    float speak = mod(floor(TR / 2.6 + seed), N);
+    for (int k = 0; k < 12; k++) {
+        float fk = float(k);
+        if (fk >= N) break;
+        float row = floor(fk / perRow), col = fk - row * perRow;
+        float nInRow = min(perRow, N - row * perRow);
+        float u = (col + 0.5) / nInRow * 2.0 - 1.0;
+        // On an arc around the viewer: the side slabs are closer, so bigger and brighter.
+        float near = 0.72 + 0.28 * u * u;
+        float sw = mw * near, shh = mw * 3.6 * near;
+        float cx = (area.x + area.z) * 0.5 + u * (aw * 0.5 - mw * 0.6);
+        float cy = area.w - (row + 0.5) * (ah / rows) - (1.0 - near) * mw * 0.6;
+        vec4 b = vec4(cx - sw * 0.5, cy - shh * 0.5, cx + sw * 0.5, cy + shh * 0.5);
+        if (sdBox(P, b) > U * 0.5) continue;
+        float v = visF(0.15 + hash(fk + 3.0) * 0.6, 0.3 + 0.6 * hash(fk + 9.0));
+        float g = (P.y - b.y) / shh;
+        over(acc, vec3(0.025 + 0.05 * g) * near, boxA(b) * v);
+        over(acc, vec3(0.22) * near, frameA(b, max(1.0, U * 0.12)) * v);
+        bool sp = abs(fk - speak) < 0.5;
+        float lit = sp ? 1.0 + pulse * 0.6 : 0.42;
+        vec3 red = C_PRI * lit;
+        vec4 tb = inset(b, sw * 0.12);
+        float tw = tb.z - tb.x;
+        vec4 top = vec4(tb.x, tb.w - tw * 0.32, tb.z, tb.w);
+        if (has(3)) tfm(3, top, 1.0, 2.0, 1.0, 0.0, 0.0, 1.0, 1.0, red, v);
+        else over(acc, red, labFit(A_SEELE, top, 0.5) * v);
+        float nh = tw * 0.62;
+        float nw = numW(2.0, nh);
+        over(acc, red, numA(fk + 1.0, 2.0, 0.0, vec2((tb.x + tb.z - nw) * 0.5, (tb.y + tb.w) * 0.5 - nh * 0.2), nh) * v);
+        over(acc, red, labFit(A_SOUND, vec4(tb.x, tb.y, tb.z, tb.y + tw * 0.22), 0.5) * v);
+        // Speaking: thin level bars under the name.
+        if (sp) {
+            float lv = sat(0.25 + level * 0.9 + 0.25 * vnoise(TR * 9.0));
+            float bars = step(0.5, fract((P.x - tb.x) / (tw / 9.0))) * step(P.x, tb.x + tw * lv);
+            over(acc, red, bars * boxA(vec4(tb.x, (tb.y + tb.w) * 0.5 - nh * 0.55, tb.z, (tb.y + tb.w) * 0.5 - nh * 0.42)) * v);
+        }
+    }
+    // Subtitles.
+    vec4 s1 = LAND ? bx(0.08, 0.075, 0.92, 0.17) : bx(0.0, 0.09, 1.0, 0.16);
+    vec4 s2 = LAND ? bx(0.15, 0.0, 0.85, 0.065) : bx(0.0, 0.0, 1.0, 0.075);
+    tf(0, s1, 1.0, 1.0, 1.0, h * 0.07, 1.0, 5.0, 1.0, C_TXT);
+    tf(1, s2, 1.0, 1.0, 1.0, h * 0.045, 1.4, 5.0, 1.0, C_TXT * 0.85);
+    return acc;
+}
+
+// ================================================================ 4 Synchro
+vec4 pSync() {
+    vec4 acc = vec4(0.0);
+    float h = CB.w - CB.y, w = CB.z - CB.x;
+    vec4 hdr, graph, side, info, tick;
+    if (LAND) {
+        hdr = bx(0.0, 0.82, 1.0, 1.0);
+        graph = bx(0.0, 0.11, 0.67, 0.79);
+        side = bx(0.70, 0.47, 1.0, 0.79);
+        info = bx(0.70, 0.11, 1.0, 0.44);
+        tick = bx(0.0, 0.0, 1.0, 0.075);
+    } else {
+        hdr = bx(0.0, 0.87, 1.0, 1.0);
+        graph = bx(0.0, 0.47, 1.0, 0.76);
+        side = bx(0.0, 0.32, 1.0, 0.44);
+        info = bx(0.0, 0.08, 1.0, 0.29);
+        tick = bx(0.0, 0.0, 1.0, 0.055);
+    }
+    // Header: label tab, title, sync ratio.
+    float hh = hdr.w - hdr.y;
+    vec4 tab = vec4(hdr.x, hdr.w - hh * 0.3, hdr.x + w * (LAND ? 0.18 : 0.4), hdr.w);
+    float tv = visF(0.0, 0.9);
+    over(acc, C_PRI, boxA(tab) * tv);
+    if (has(3)) tf(3, inset(tab, U * 0.5), 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, vec3(0.0));
+    else over(acc, vec3(0.0), labFit(A_NERV, inset(tab, U * 0.5), 0.0) * tv);
+    // Landscape: sync ratio box at the right of the header. Portrait: its own row below.
+    float rw = LAND ? w * 0.3 : 0.0;
+    vec4 tb = vec4(hdr.x, hdr.y, hdr.z - rw - (LAND ? U * 2.0 : 0.0), tab.y - U * 1.0);
+    tf(0, vec4(tb.x, tb.y + (tb.w - tb.y) * 0.3, tb.z, tb.w), 0.0, 1.0, 1.0, 0.0, 0.2, 2.0, 2.0, C_PRI);
+    tf(1, vec4(tb.x, tb.y, tb.z, tb.y + (tb.w - tb.y) * 0.26), 0.0, 1.0, 1.0, 0.0, 0.6, 2.0, 2.0, C_SEC);
+    vec4 rb = LAND ? vec4(hdr.z - rw, hdr.y, hdr.z, hdr.w) : bx(0.0, 0.775, 1.0, 0.855);
+    float rv = visF(0.3, 0.8);
+    over(acc, C_PRI, frameA(rb, U * 0.25) * rv);
+    float lh = (rb.w - rb.y) * 0.2;
+    over(acc, C_PRI, lab(A_SYNC, vec2(rb.x + U * 1.2, rb.w - lh - U * 1.0), lh, 0.0) * rv);
+    over(acc, C_PRI, lab(A_SYNCJ, vec2(rb.z - U * 1.2, rb.w - lh - U * 1.0), lh, 1.0) * rv);
+    float val = min(T / 1.6, 1.0) * (41.3 + 6.0 * sin(TR * 0.35 + seed) + 2.5 * (vnoise(TR * 3.0) - 0.5) + 30.0 * level);
+    float nh = (rb.w - rb.y) * 0.5;
+    float nw = numW(5.0, nh) + labW(digitR(12.0), nh);
+    vec2 np = vec2(rb.z - U * 1.2 - nw, rb.y + U * 1.0);
+    over(acc, C_SEC, numA(val, 3.0, 1.0, np, nh) * rv);
+    over(acc, C_SEC, lab(digitR(12.0), vec2(np.x + numW(5.0, nh), np.y), nh, 0.0) * rv);
+    // Graph.
+    float gv = visF(0.4, 0.6);
+    over(acc, vec3(0.0), boxA(graph) * gv * 0.5);
+    over(acc, C_PRI, frameA(graph, U * 0.25) * gv);
+    vec2 gs = vec2((graph.z - graph.x) / 12.0, (graph.w - graph.y) / 6.0);
+    vec2 gq = abs(mod(P - graph.xy + gs * 0.5, gs) - gs * 0.5);
+    float grid = fillA(min(gq.x, gq.y) - 0.5) * boxA(graph);
+    over(acc, C_PRI, grid * gv * 0.22 * uiAmt);
+    over(acc, C_PRI, ticksA(vec4(graph.x, graph.y, graph.z, graph.y), gs.x / 5.0, U * 1.2, max(1.0, U * 0.1)) * gv * uiAmt);
+    float lb = U * 2.0;
+    over(acc, C_PRI, lab(A_HARMO, vec2(graph.x + U * 1.2, graph.w - lb - U * 1.0), lb, 0.0) * gv);
+    if (boxA(graph) > 0.0) {
+        float gx = (P.x - graph.x) / (graph.z - graph.x);
+        float draw = step(gx, easeOut((T - 0.5) / 1.2));
+        float gh = graph.w - graph.y;
+        for (int k = 0; k < 3; k++) {
+            float fk = float(k);
+            float amp = gh * (0.12 + 0.06 * fk) * (0.6 + level * 0.9 + pulse * 0.5);
+            float fr = 2.0 + fk * 1.7;
+            float ph = TR * (0.8 + fk * 0.45) + fk * 2.0;
+            float x = gx * TAU * fr;
+            float y = sin(x - ph) + 0.35 * sin(x * 2.7 + ph * 1.3) + 0.25 * (vnoise(gx * 40.0 + TR * 6.0 + fk * 9.0) - 0.5);
+            float dy = (cos(x - ph) + 0.95 * cos(x * 2.7 + ph * 1.3)) * TAU * fr / (graph.z - graph.x) * amp;
+            float yc = graph.y + gh * (0.5 + (fk - 1.0) * 0.18) + y * amp;
+            float d = abs(P.y - yc) / sqrt(1.0 + dy * dy);
+            vec3 col = k == 0 ? C_PRI : (k == 1 ? C_SEC : C_ACC);
+            over(acc, col, fillA(d - U * 0.18) * draw * gv);
+        }
+        // cursor line
+        float cx = graph.x + fract(TR * 0.18) * (graph.z - graph.x);
+        over(acc, C_SEC, fillA(abs(P.x - cx) - U * 0.1) * gv * 0.6 * step(0.99, draw + 0.99));
+    }
+    // Meters.
+    float mv = visF(0.7, 0.5);
+    over(acc, C_PRI, frameA(side, U * 0.25) * mv);
+    vec4 sm = inset(side, U * 1.5);
+    float nb = 10.0;
+    float bwid = (sm.z - sm.x) / nb;
+    float bi = floor((P.x - sm.x) / bwid);
+    if (bi >= 0.0 && bi < nb) {
+        float lvl = sat(0.25 + 0.55 * vnoise(TR * (1.5 + hash(bi) * 2.0) + bi * 3.0) + level * 0.5 * hash(bi + 1.0));
+        lvl *= easeOut((T - 0.7) / 0.8);
+        float yy = (P.y - sm.y) / (sm.w - sm.y);
+        float seg = step(0.3, fract(yy * 14.0));
+        float inb = step(0.18, fract((P.x - sm.x) / bwid)) * step(fract((P.x - sm.x) / bwid), 0.82);
+        vec3 col = yy > 0.8 ? C_ACC : (yy > 0.6 ? C_SEC : C_PRI);
+        over(acc, col, inb * seg * step(yy, lvl) * step(0.0, yy) * mv);
+        over(acc, col, inb * seg * step(lvl, yy) * step(yy, 1.0) * mv * 0.12);
+    }
+    // Info lines.
+    float iv = visF(0.9, 0.4);
+    over(acc, C_PRI, bracketsA(info, U * 2.0, U * 0.3) * iv);
+    if (has(4)) tf(4, inset(info, U * 1.8), 0.0, 2.0, 1.0, U * 3.0, 1.0, 2.0, 2.0, C_PRI);
+    else over(acc, C_PRI, dataA(inset(info, U * 1.8), U * 2.0, 4.0) * iv * 0.75);
+    // Ticker.
+    float kv = visF(0.2, 0.95);
+    over(acc, vec3(0.0), boxA(tick) * kv * 0.6);
+    over(acc, C_PRI, (segA(vec2(tick.x, tick.w), vec2(tick.z, tick.w), U * 0.2) + segA(vec2(tick.x, tick.y), vec2(tick.z, tick.y), U * 0.2)) * kv);
+    over(acc, C_PRI, tickerF(5, A_TRANSMIT, tick, -U * 12.0, 0.6) * kv);
+    return acc;
+}
+
+// ================================================================ 5 Activite (timer)
+vec4 pTimer() {
+    vec4 acc = vec4(0.0);
+    float h = CB.w - CB.y, w = CB.z - CB.x;
+    vec4 dg, tabs, btn, head, foot;
+    if (LAND) {
+        head = bx(0.21, 0.74, 0.79, 0.86);
+        dg = bx(0.21, 0.30, 0.79, 0.72);
+        foot = bx(0.21, 0.12, 0.79, 0.27);
+        tabs = bx(0.0, 0.30, 0.18, 0.72);
+        btn = bx(0.82, 0.30, 1.0, 0.72);
+    } else {
+        head = bx(0.0, 0.84, 1.0, 0.94);
+        dg = bx(0.0, 0.62, 1.0, 0.82);
+        foot = bx(0.0, 0.50, 1.0, 0.60);
+        tabs = bx(0.0, 0.27, 1.0, 0.46);
+        btn = bx(0.0, 0.04, 1.0, 0.24);
+    }
+    float total = timerMin * 60.0;
+    float rem = max(total - TR, 0.0);
+    bool low = rem < 60.0;
+    bool zero = rem <= 0.0;
+    vec3 dc = low ? C_ACC : C_SEC;
+    float zf = zero ? step(0.5, fract(TR * 2.0)) : 1.0;
+    // Outer frame and inner ruler.
+    vec4 fr = inset(vec4(dg.x, foot.y, dg.z, head.w), -U * 1.5);
+    float fv = vis(0.0, 0.95);
+    float g = easeOut(T / 0.5);
+    over(acc, vec3(0.0), boxA(fr) * fv * 0.55);
+    over(acc, C_PRI, growFrameA(fr, U * 0.35, g) * fv);
+    over(acc, C_PRI, ticksA(vec4(fr.x + U, fr.y + U * 0.6, fr.z - U, fr.y), U * 1.4, U * 1.4, max(1.0, U * 0.12)) * fv * uiAmt);
+    // Header: label (or the default 活動限界まで + ACTIVE TIME REMAINING).
+    float hv = visF(0.2, 0.8);
+    if (has(0)) tf(0, head, 0.0, 1.0, 1.0, 0.0, 0.2, 1.0, 1.0, C_PRI);
+    else {
+        over(acc, C_PRI, labFit(A_LIMIT, vec4(head.x, head.y, head.x + (head.z - head.x) * 0.48, head.w), 0.0) * hv);
+        over(acc, C_PRI, labFit(A_ATR, vec4(head.x + (head.z - head.x) * 0.52, head.y, head.z, head.y + (head.w - head.y) * 0.45), 1.0) * hv);
+    }
+    // Digits MM:SS:CC.
+    float dv = visF(0.35, 0.7) * zf;
+    float dh = dg.w - dg.y;
+    float aspect = 0.56;
+    float cw = dh * aspect, colw = dh * 0.22, sp = dh * 0.07;
+    float tot = 6.0 * cw + 2.0 * colw + 6.0 * sp;   // same advance as the loop below
+    float sc = min(1.0, (dg.z - dg.x) / tot);
+    dh *= sc; cw *= sc; colw *= sc; sp *= sc; tot *= sc;
+    float x = (dg.x + dg.z - tot) * 0.5;
+    float yb = (dg.y + dg.w - dh) * 0.5;
+    float mm = floor(rem / 60.0), ss = floor(mod(rem, 60.0)), cc = floor(fract(rem) * 100.0);
+    for (int k = 0; k < 8; k++) {
+        float fk = float(k);
+        bool isCol = k == 2 || k == 5;
+        float ww = isCol ? colw : cw;
+        if (P.x >= x && P.x < x + ww && P.y >= yb && P.y <= yb + dh) {
+            vec2 q = vec2((P.x - x) / dh, (P.y - yb) / dh);
+            if (isCol) {
+                vec2 qc = vec2(q.x - colw / dh * 0.5, q.y);
+                float dots = fillA((max(abs(qc.x), abs(abs(qc.y - 0.5) - 0.2)) - 0.045) * dh);
+                over(acc, dc, dots * dv);
+            } else {
+                float pos = fk < 2.0 ? fk : (fk < 5.0 ? fk - 1.0 : fk - 2.0);
+                float val = pos < 0.5 ? floor(mm / 10.0) : pos < 1.5 ? mod(mm, 10.0) : pos < 2.5 ? floor(ss / 10.0) : pos < 3.5 ? mod(ss, 10.0) : pos < 4.5 ? floor(cc / 10.0) : mod(cc, 10.0);
+                vec2 s = seg7(val, vec2(q.x / aspect, q.y), 0.11, aspect, dh);
+                over(acc, dc, s.y * 0.1 * vis(0.35, 0.7));
+                over(acc, dc, s.x * dv);
+            }
+        }
+        x += ww + (isCol ? sp * 0.5 : sp);
+    }
+    // Footer: subtitle and code.
+    tf(1, vec4(foot.x, foot.y + (foot.w - foot.y) * 0.45, foot.z, foot.w), 0.0, 1.0, 1.0, 0.0, 0.6, 2.0, 2.0, C_PRI);
+    tf(3, vec4(foot.x, foot.y, foot.z, foot.y + (foot.w - foot.y) * 0.38), 0.0, 1.0, 1.0, 0.0, 0.8, 2.0, 2.0, C_PRI);
+    // Power tabs.
+    for (int k = 0; k < 2; k++) {
+        float fk = float(k);
+        vec4 b = LAND ? vec4(tabs.x, tabs.w - (fk + 1.0) * (tabs.w - tabs.y) * 0.5 + U, tabs.z, tabs.w - fk * (tabs.w - tabs.y) * 0.5)
+                      : vec4(tabs.x + fk * (tabs.z - tabs.x) * 0.5, tabs.y, tabs.x + (fk + 1.0) * (tabs.z - tabs.x) * 0.5 - U, tabs.w);
+        float v = visF(0.5 + fk * 0.12, 0.6);
+        bool on = k == 0;
+        over(acc, on ? C_SEC : C_PRI, chamA(b, U * 1.5) * v * (on ? 0.95 : 0.0));
+        over(acc, on ? C_SEC : C_PRI, chamFrameA(b, U * 1.5, U * 0.3) * v * (on ? 1.0 : 0.5));
+        vec3 tc = on ? vec3(0.0) : C_PRI * 0.6;
+        vec4 ib = inset(b, U * 1.2);
+        over(acc, tc, labFit(k == 0 ? A_INTJ : A_EXTJ, vec4(ib.x, ib.y + (ib.w - ib.y) * 0.42, ib.z, ib.w), 0.5) * v);
+        over(acc, tc, labFit(k == 0 ? A_INTERNAL : A_EXTERNAL, vec4(ib.x, ib.y, ib.z, ib.y + (ib.w - ib.y) * 0.32), 0.5) * v);
+    }
+    // Mode buttons.
+    for (int k = 0; k < 4; k++) {
+        float fk = float(k);
+        vec4 b = LAND ? vec4(btn.x, btn.w - (fk + 1.0) * (btn.w - btn.y) * 0.25 + U * 0.6, btn.z, btn.w - fk * (btn.w - btn.y) * 0.25)
+                      : vec4(btn.x + fk * (btn.z - btn.x) * 0.25, btn.y, btn.x + (fk + 1.0) * (btn.z - btn.x) * 0.25 - U * 0.6, btn.w);
+        float v = visF(0.6 + fk * 0.08, 0.5);
+        bool on = (k == 2 && !low) || (k == 3 && low && BLINK > 0.5) || (k == 0 && zero);
+        vec3 col = k == 3 ? C_ACC : C_SEC;
+        over(acc, col, boxA(b) * v * (on ? 0.95 : 0.0));
+        over(acc, col, frameA(b, U * 0.25) * v * (on ? 1.0 : 0.45));
+        vec4 wd = k == 0 ? A_STOP : (k == 1 ? A_SLOW : (k == 2 ? A_NORMAL : A_RACING));
+        over(acc, on ? vec3(0.0) : col * 0.6, labFit(wd, inset(b, (b.w - b.y) * 0.24), 0.5) * v);
+    }
+    return acc;
+}
+
+// ================================================================ 6 Pattern Blue
+vec4 pPattern() {
+    vec4 acc = vec4(0.0);
+    float h = CB.w - CB.y, w = CB.z - CB.x;
+    vec2 tgt = LAND ? vec2(CB.x + w * 0.70, CB.y + h * 0.46) : vec2(CB.x + w * 0.5, CB.y + h * 0.56);
+    float rr = LAND ? min(h * 0.3, w * 0.2) : min(w * 0.36, h * 0.22);
+    // Honeycomb: cells light up in a wave from the target, some stay lit.
+    float hs = U * 3.6;
+    vec3 hx = hexG(P, hs);
+    vec2 cc = hx.yz * hs;
+    float dist = length(cc - tgt) / (rr * 3.2);
+    float wave = T * 0.55 - dist;
+    float on = step(0.0, wave);
+    float keep = step(0.62, hash2(hx.yz + floor(TR * 0.7) * 0.0 + seed));
+    float pulseC = exp(-abs(wave - 0.05) * 18.0);
+    float fade = (1.0 - sat(dist * 0.9)) * uiAmt;
+    float cellA = on * (0.08 + 0.42 * keep * (0.7 + 0.3 * sin(TR * 3.0 + hash2(hx.yz) * TAU)) + 0.6 * pulseC) * fade * step(OUTP, 0.5 + 0.5 * hash2(hx.yz));
+    over(acc, C_PRI, fillA(-(hx.x - U * 0.22)) * cellA);
+    over(acc, C_PRI, fillA(abs(hx.x - U * 0.1) - U * 0.06) * on * 0.5 * fade);
+    // Reticle.
+    float rv = visF(0.4, 0.7);
+    float d = length(P - tgt);
+    float an = atan(P.y - tgt.y, P.x - tgt.x);
+    over(acc, C_SEC, fillA(abs(d - rr) - U * 0.2) * rv);
+    over(acc, C_SEC, fillA(abs(d - rr * 0.62) - U * 0.12) * rv * 0.7);
+    float arcs = step(0.5, fract((an + TR * 0.6) / TAU * 4.0)) * fillA(abs(d - rr * 1.12) - U * 0.45);
+    over(acc, C_SEC, arcs * rv);
+    float tickR = step(0.85, fract(an / TAU * 72.0)) * step(rr * 0.9, d) * step(d, rr);
+    over(acc, C_SEC, tickR * rv * 0.8);
+    float crs = fillA(min(abs(P.x - tgt.x), abs(P.y - tgt.y)) - U * 0.1) * step(rr * 0.18, d);
+    over(acc, C_SEC, crs * rv * 0.55 * uiAmt);
+    float lockT = 2.2;
+    float locked = step(lockT, T);
+    float bs = mix(rr * 1.6, rr * 0.42, easeOut((T - 0.8) / (lockT - 0.8)));
+    over(acc, C_ACC, bracketsA(vec4(tgt - bs, tgt + bs), bs * 0.3, U * 0.45) * rv);
+    float lh = U * 2.4;
+    over(acc, C_ACC, lab(locked > 0.5 ? A_LOCK : A_TARGET, vec2(tgt.x + bs + U, tgt.y + bs - lh), lh, 0.0) * rv * (locked > 0.5 ? BLINK * 0.6 + 0.4 : 1.0));
+    float dd = 1200.0 - 900.0 * easeOut(T / 6.0) + 30.0 * sin(TR);
+    // Readouts: under / over the reticle in landscape, on its sides otherwise (the texts
+    // sit under the reticle in portrait and square).
+    vec2 dP = LAND ? vec2(tgt.x + rr * 0.75, tgt.y - rr - lh * 3.6) : vec2(tgt.x + rr * 1.2, tgt.y - rr * 0.55);
+    vec2 aP = LAND ? vec2(tgt.x - rr * 1.15, tgt.y + rr - lh * 0.2) : vec2(tgt.x - rr * 1.2 - numW(6.0, lh), tgt.y + rr * 0.45);
+    over(acc, C_SEC, lab(A_DIST, dP + vec2(0.0, lh * 1.4), lh * 0.8, 0.0) * rv);
+    over(acc, C_SEC, numA(dd, 4.0, 1.0, dP, lh) * rv);
+    over(acc, C_SEC, lab(A_ALT, aP + vec2(0.0, lh * 1.4), lh * 0.8, 0.0) * rv);
+    over(acc, C_SEC, numA(312.0 + 40.0 * vnoise(TR), 3.0, 2.0, aP, lh) * rv);
+    // Banner.
+    vec4 ban = LAND ? bx(0.0, 0.86, 1.0, 1.0) : bx(0.0, 0.9, 1.0, 1.0);
+    float bv = visF(0.0, 0.9);
+    over(acc, vec3(0.0), boxA(ban) * bv * 0.8);
+    over(acc, C_PRI, frameA(ban, U * 0.3) * bv);
+    vec4 bi = inset(ban, U * 1.2);
+    float bw2 = bi.z - bi.x;
+    float bf = BLINK > 0.5 ? 1.0 : 0.55;
+    over(acc, C_SEC, labFit(A_PB, vec4(bi.x, bi.y, bi.x + bw2 * 0.5, bi.w), 0.0) * bv * bf);
+    over(acc, C_SEC, labFit(A_PBJ, vec4(bi.x + bw2 * 0.55, bi.y + (bi.w - bi.y) * 0.35, bi.z, bi.w), 1.0) * bv * bf);
+    over(acc, C_PRI, labFit(A_BLOOD, vec4(bi.x + bw2 * 0.55, bi.y, bi.z, bi.y + (bi.w - bi.y) * 0.28), 1.0) * bv);
+    // Texts: kanji + title on the left (or under the reticle when portrait).
+    vec4 bK, bT, bS, bI, bL;
+    if (LAND) {
+        bL = bx(0.0, 0.78, 0.4, 0.83);
+        bK = bx(0.0, 0.42, 0.42, 0.76);
+        bT = bx(0.0, 0.27, 0.42, 0.40);
+        bS = bx(0.0, 0.20, 0.42, 0.26);
+        bI = bx(0.0, 0.0, 0.42, 0.18);
+    } else {
+        bL = bx(0.0, 0.85, 1.0, 0.89);
+        bK = bx(0.0, 0.17, 0.55, 0.32);
+        bT = bx(0.58, 0.17, 1.0, 0.32);
+        bS = bx(0.0, 0.11, 1.0, 0.16);
+        bI = bx(0.0, 0.0, 1.0, 0.10);
+    }
+    float kv = vis(0.7, 0.6);
+    over(acc, vec3(0.0), boxA(inset(bK, -U)) * kv * 0.55);
+    over(acc, C_SEC, frameA(inset(bK, -U), U * 0.2) * kv);
+    if (has(2)) tf(2, inset(bK, U), 1.0, 1.0, 1.0, 0.0, 0.7, 3.0, 2.0, C_SEC);
+    else over(acc, C_SEC, labFit(A_SHITO, inset(bK, U), 0.5) * kv);
+    tf(0, bT, 0.0, 2.0, 1.0, 0.0, 1.1, 2.0, 2.0, C_SEC);
+    tf(1, bS, 0.0, 2.0, 1.0, 0.0, 1.4, 2.0, 2.0, C_PRI);
+    tf(3, bL, 0.0, 0.0, 1.0, 0.0, 0.3, 1.0, 1.0, C_PRI);
+    if (has(4)) tf(4, bI, 0.0, 2.0, 1.0, U * 2.6, 1.6, 2.0, 2.0, C_PRI);
+    else over(acc, C_PRI, dataA(bI, U * 1.7, 5.0) * vis(1.6, 0.4) * 0.6);
+    return acc;
+}
+
+// ================================================================ 7 Bandeau
+vec4 pLower() {
+    vec4 acc = vec4(0.0);
+    float h = CB.w - CB.y, w = CB.z - CB.x;
+    vec4 bar = LAND ? bx(0.0, 0.08, 0.74, 0.27) : bx(0.0, 0.08, 1.0, 0.22);
+    float bh = bar.w - bar.y;
+    float tw = min(bh * 1.25, (bar.z - bar.x) * 0.3);
+    vec4 tag = vec4(bar.x, bar.y, bar.x + tw, bar.w);
+    vec4 mainB = vec4(tag.z + U * 0.8, bar.y + bh * 0.38, bar.z, bar.w);
+    vec4 sub = vec4(tag.z + U * 0.8, bar.y, bar.x + (bar.z - bar.x) * 0.9, bar.y + bh * 0.33);
+    // Wipe in from the left, out to the left.
+    float e = easeOut((T - 0.1) / 0.45);
+    float eo = 1.0 - sat(OUTP * 1.4);
+    float edge = mix(bar.x, bar.z + U * 4.0, e * eo);
+    float m = step(P.x, edge);
+    float tv = vis(0.0, 1.0);
+    over(acc, C_ACC, chamA(tag, U * 1.2) * tv * m);
+    if (has(3)) tf(3, inset(tag, bh * 0.16), 1.0, 1.0, 1.0, 0.0, 0.3, 1.0, 1.0, vec3(1.0));
+    else over(acc, vec3(1.0), labFit(A_LIVE, inset(tag, bh * 0.22), 0.5) * tv * m * (0.6 + 0.4 * BLINK));
+    float cut = (mainB.w - mainB.y) * 0.6;
+    float sdm = max(sdBox(P, mainB), (P.x - mainB.z) + (P.y - mainB.y) - (mainB.w - mainB.y));
+    over(acc, C_PRI, fillA(sdm) * tv * m);
+    tf(0, inset(mainB, (mainB.w - mainB.y) * 0.14) - vec4(0.0, 0.0, cut, 0.0), 0.0, 1.0, 1.0, 0.0, 0.35, 4.0, 3.0, vec3(0.0));
+    over(acc, vec3(0.0), boxA(sub) * tv * m * 0.82);
+    over(acc, C_PRI, segA(vec2(sub.x, sub.y), vec2(sub.z, sub.y), U * 0.25) * tv * m);
+    tf(1, inset(sub, (sub.w - sub.y) * 0.16), 0.0, 1.0, 1.0, 0.0, 0.6, 2.0, 2.0, C_PRI);
+    // Thin ticker under the bar.
+    vec4 tk = vec4(bar.x, bar.y - U * 1.2 - max(U * 2.4, h * 0.035), bar.z, bar.y - U * 1.2);
+    if (has(5)) {
+        float kv = vis(0.5, 0.8) * m;
+        over(acc, vec3(0.0), boxA(tk) * kv * 0.6);
+        over(acc, C_PRI, tickerF(5, A_TRANSMIT, tk, -U * 10.0, 0.7) * kv);
+    }
+    // Corner block top right: kanji + brackets.
+    // Portrait: the kanji becomes a poster block filling the free upper half.
+    vec4 kb = LAND ? bx(0.80, 0.72, 1.0, 1.0) : bx(0.06, 0.52, 0.94, 0.97);
+    float kv2 = visF(0.6, 0.6) * uiAmt;
+    if (has(2)) {
+        over(acc, C_PRI, bracketsA(inset(kb, -U), U * 2.0, U * 0.3) * kv2);
+        tf(2, inset(kb, U), 1.0, 1.0, 1.0, 0.0, 0.6, 3.0, 2.0, C_PRI);
+    }
+    if (has(4)) {
+        vec4 ib = LAND ? bx(0.0, 0.30, 0.6, 0.48) : bx(0.0, 0.25, 1.0, 0.4);
+        tf(4, ib, 0.0, 0.0, 1.0, U * 2.8, 0.8, 2.0, 2.0, C_PRI);
+    }
+    // Screen corner brackets.
+    over(acc, C_PRI, bracketsA(inset(CB, -U * 1.0), U * 3.0, U * 0.25) * vis(0.2, 0.9) * uiAmt * 0.8);
+    return acc;
+}
+
+// ================================================================ 8 Terminal
+vec4 pTerm() {
+    vec4 acc = vec4(0.0);
+    float h = CB.w - CB.y, w = CB.z - CB.x;
+    float fv = vis(0.0, 1.0);
+    float g = easeOut(T / 0.45);
+    vec4 fr = CB;
+    over(acc, vec3(0.0), boxA(fr) * fv * 0.6);
+    over(acc, C_PRI, growFrameA(fr, U * 0.3, g) * fv);
+    float hh = max(U * 4.5, h * 0.075);
+    vec4 hd = vec4(fr.x, fr.w - hh, fr.z, fr.w);
+    float hv = visF(0.3, 0.95);
+    over(acc, C_PRI, boxA(hd) * hv);
+    vec4 hi = inset(hd, hh * 0.2);
+    over(acc, vec3(0.0), lab(A_MAGISYS, hi.xy, hi.w - hi.y, 0.0) * hv);
+    float ck = floor(TR);
+    float clk = mod(floor(ck / 3600.0), 24.0) * 10000.0 + mod(floor(ck / 60.0), 60.0) * 100.0 + mod(ck, 60.0);
+    float nh = hi.w - hi.y;
+    over(acc, vec3(0.0), numA(clk + 0.0, 6.0, 0.0, vec2(hi.z - numW(6.0, nh), hi.y), nh) * hv);
+    if (has(3)) tf(3, vec4(hi.x + labW(A_MAGISYS, nh) + U * 3.0, hi.y, hi.z - numW(6.0, nh) - U * 3.0, hi.w), 1.0, 1.0, 1.0, 0.0, 0.3, 1.0, 1.0, vec3(0.0));
+    // Data columns on the right.
+    bool side = LAND && uiAmt > 0.2;
+    float sw = side ? w * 0.2 : 0.0;
+    if (side) {
+        vec4 sb = vec4(fr.z - sw, fr.y + U * 1.5, fr.z - U * 1.5, hd.y - U * 1.5);
+        over(acc, C_PRI, segA(vec2(sb.x - U * 1.5, sb.y), vec2(sb.x - U * 1.5, sb.w), U * 0.2) * fv);
+        over(acc, C_PRI, dataA(sb, U * 1.6, 7.0) * visF(0.5, 0.5) * 0.55);
+    }
+    // Log lines: every field one after the other, typed.
+    vec4 body = vec4(fr.x + U * 3.0, fr.y + U * 2.0, fr.z - sw - U * 3.0, hd.y - U * 2.5);
+    float lh = clamp(h * 0.055, U * 3.0, U * 6.5);
+    float pitch = lh * (1.0 + G_LEAD + 0.15);
+    float y = body.w;
+    float tq = 0.5;
+    float chev = lh * 1.1;
+    float lastF = 0.0;
+    for (int k = 0; k < 6; k++) if (k != 3 && has(k)) lastF = float(k);
+    for (int k = 0; k < 6; k++) {
+        int f = k;
+        if (f == 3) continue;
+        float n = nLines(f);
+        if (n < 0.5) continue;
+        float bh = n * pitch;
+        vec4 b = vec4(body.x + chev, max(y - bh, body.y), body.z, y);
+        vec3 col = f == 0 ? C_SEC : C_PRI;
+        float cv = step(tq, T) * step(OUTP, 0.95);
+        over(acc, col, chevA(vec2(body.x + lh * 0.45, y - lh * 0.5 - (pitch - lh) * 0.25), lh * 0.6, lh * 0.16) * cv);
+        G_CURLIM = float(f) < lastF - 0.5 ? 0.35 * 26.0 : 0.0;
+        tf(f, b, 0.0, 2.0, 1.0, lh, tq, 2.0, 2.0, col);
+        G_CURLIM = 0.0;
+        tq += glyphs(f) / 26.0 + 0.35;
+        y -= bh + pitch * 0.35;
+        if (y < body.y) break;
+    }
+    return acc;
+}
+
+float blinkAmt() { return blink; }
+
+vec4 drawPreset(float pr) {
+    S_HIT = false;
+    G_CURLIM = 0.0;
+    vec4 acc;
+    if (pr < 0.5) acc = pTitle();
+    else if (pr < 1.5) acc = pAlert();
+    else if (pr < 2.5) acc = pMagi();
+    else if (pr < 3.5) acc = pSeele();
+    else if (pr < 4.5) acc = pSync();
+    else if (pr < 5.5) acc = pTimer();
+    else if (pr < 6.5) acc = pPattern();
+    else if (pr < 7.5) acc = pLower();
+    else acc = pTerm();
+    if (S_HIT) {
+        G_CUR = S_ANI.w;
+        vec4 r = fieldA(S_F, S_BOX, S_PAR.x, S_PAR.y, S_PAR.z, S_PAR.w, S_ANI.x, S_ANI.y, S_ANI.z);
+        ink(acc, r * vec4(S_MUL, S_MUL, 1.0, 1.0), S_COL);
+    }
+    return acc;
+}
+
+// Palettes: primary, secondary, accent, text.
+void setPalette(float pal) {
+    if (pal < 1.5) { C_PRI = vec3(1.0, 0.45, 0.04); C_SEC = vec3(1.0, 0.68, 0.12); C_ACC = vec3(1.0, 0.12, 0.08); C_TXT = vec3(1.0, 0.62, 0.2); }
+    else if (pal < 2.5) { C_PRI = vec3(1.0, 0.1, 0.08); C_SEC = vec3(1.0, 0.45, 0.05); C_ACC = vec3(1.0, 0.82, 0.0); C_TXT = vec3(1.0, 0.92, 0.9); }
+    else if (pal < 3.5) { C_PRI = vec3(0.22, 1.0, 0.42); C_SEC = vec3(1.0, 0.55, 0.06); C_ACC = vec3(1.0, 0.13, 0.1); C_TXT = vec3(0.75, 1.0, 0.8); }
+    else if (pal < 4.5) { C_PRI = vec3(0.16, 0.48, 1.0); C_SEC = vec3(1.0, 0.52, 0.06); C_ACC = vec3(1.0, 0.14, 0.12); C_TXT = vec3(0.85, 0.92, 1.0); }
+    else if (pal < 5.5) { C_PRI = vec3(0.55, 1.0, 0.12); C_SEC = vec3(0.62, 0.35, 1.0); C_ACC = vec3(1.0, 0.45, 0.05); C_TXT = vec3(0.85, 1.0, 0.7); }
+    else if (pal < 6.5) { C_PRI = vec3(1.0, 0.08, 0.12); C_SEC = vec3(1.0, 0.6, 0.1); C_ACC = vec3(1.0, 1.0, 1.0); C_TXT = vec3(1.0, 0.9, 0.88); }
+    else if (pal < 7.5) { C_PRI = vec3(0.55, 0.78, 1.0); C_SEC = vec3(0.95, 0.97, 1.0); C_ACC = vec3(1.0, 0.55, 0.1); C_TXT = vec3(0.92, 0.96, 1.0); }
+    else { C_PRI = vec3(0.92); C_SEC = vec3(1.0); C_ACC = vec3(1.0, 0.18, 0.12); C_TXT = vec3(1.0); }
+}
+float autoPalette(float pr) {
+    if (pr < 0.5) return 8.0;
+    if (pr < 1.5) return 2.0;
+    if (pr < 2.5) return 3.0;
+    if (pr < 3.5) return 2.0;
+    if (pr < 5.5) return 1.0;
+    if (pr < 6.5) return 4.0;
+    if (pr < 7.5) return 1.0;
+    return 3.0;
+}
+float autoBg(float pr) {   // 1 transparent, 2 voile, 3 noir
+    if (pr < 0.5 || (pr > 2.5 && pr < 3.5)) return 3.0;
+    if (pr > 6.5 && pr < 7.5) return 1.0;
+    return 2.0;
+}
+
+float requested(float now) {
+    if (cycle < 0.5) return preset;
+    float tc = clockMode < 0.5 ? now : tBeat;
+    float idx = floor(tc / max(duree, 0.5));
+    if (cycle < 1.5) return mod(preset + idx, NPRESET);
+    float r = floor(hash(idx * 1.37 + seed) * NPRESET);
+    float prev = floor(hash((idx - 1.0) * 1.37 + seed) * NPRESET);
+    return abs(r - prev) < 0.5 ? mod(r + 1.0, NPRESET) : r;
+}
+
+void main() {
+    vec2 fc = gl_FragCoord.xy;
+
+    // ---- state, first (preset on screen, start, waiting preset + 1, request time) | (text hash, last time)
+    if (PASSINDEX == P_ST) {
+        vec4 s0 = readState();
+        vec4 s1 = vec4(floor(stv(4) + 0.5), stv(5), floor(stv(6) + 0.5), stv(7));
+        float now = tSec;
+        float req = requested(now);
+        float th = mod(len0 * 1.0 + len1 * 3.0 + len2 * 7.0 + len3 * 13.0 + len4 * 29.0 + len5 * 61.0, 65521.0);
+        float shown = s0.x, start = s0.y, pend = s0.z, rt = s0.w;
+        float hlf = transDur * 0.5;
+        bool init = s1.w > 0.5;
+        if (!init || now < s1.y - 0.05) { shown = req; start = now; pend = 0.0; rt = now; }
+        else {
+            if (pend < 0.5) {
+                if (abs(req - shown) > 0.5) { pend = req + 1.0; rt = now; }
+                else if (replay > 0.5 && abs(th - s1.x) > 0.5) start = now;
+            } else {
+                if (abs(req - shown) < 0.5) pend = 0.0;
+                else {
+                    pend = req + 1.0;
+                    if (now - rt >= hlf) { shown = pend - 1.0; start = now; pend = 0.0; }
+                }
+            }
+        }
+        // Frames since the text last changed: the measuring passes only run for a few
+        // frames after a change (Text Render may deliver the new texture a frame late)
+        // and once every 30 frames for same-length edits; otherwise they keep their result.
+        float cnt = (!init || abs(th - s1.x) > 0.5) ? 0.0 : (s1.z > 30000.0 ? 6.0 : s1.z + 1.0);
+        int i = int(fc.x);
+        float v = i == 0 ? shown : i == 1 ? start : i == 2 ? pend : i == 3 ? rt
+                : i == 4 ? th : i == 5 ? now : i == 6 ? cnt : 1.0;
+        gl_FragColor = packT(v);
+        return;
+    }
+
+    // Measuring passes: recompute only when needed, else copy last frame's result.
+    if (PASSINDEX >= P_COV && PASSINDEX <= P_GIDX) {
+        float mc = floor(stv(6) + 0.5);
+        if (mc > 5.5 && mod(mc, 30.0) > 0.5) {
+            vec2 u = fc / RENDERSIZE;
+            if (PASSINDEX == P_COV) gl_FragColor = IMG_NORM_PIXEL(cov, u);
+            else if (PASSINDEX == P_ROWA) gl_FragColor = IMG_NORM_PIXEL(rowA, u);
+            else if (PASSINDEX == P_ROWS) gl_FragColor = IMG_NORM_PIXEL(rows, u);
+            else if (PASSINDEX == P_LINES) gl_FragColor = IMG_NORM_PIXEL(lines, u);
+            else if (PASSINDEX == P_GCOL) gl_FragColor = IMG_NORM_PIXEL(gcol, u);
+            else if (PASSINDEX == P_GBLK) gl_FragColor = IMG_NORM_PIXEL(gblk, u);
+            else gl_FragColor = IMG_NORM_PIXEL(gidx, u);
+            return;
+        }
+    }
+    // ---- ink coverage of the six textures on a 480 x 270 grid each
+    if (PASSINDEX == P_COV) {
+        float f = floor(fc.y / GRID.y);
+        vec2 cell = vec2(floor(fc.x), floor(fc.y - f * GRID.y));
+        int fi = int(f + 0.5);
+        float m = 0.0;
+        for (int j = 0; j < 3; j++) for (int i = 0; i < 3; i++) {
+            vec2 uv = (cell + (vec2(float(i), float(j)) + 0.5) / 3.0) / GRID;
+            m = max(m, txtA(fi, uv));
+        }
+        gl_FragColor = vec4(step(0.3, m), 0.0, 0.0, 1.0);
+        return;
+    }
+    // ---- 1-2: per row: any ink, first and last inked column (blocks of 15, then 32 blocks)
+    if (PASSINDEX == P_ROWA) {
+        float b = floor(fc.x), row = floor(fc.y);
+        float anyI = 0.0, x0 = 1e4, x1 = -1.0;
+        for (int k = 0; k < 15; k++) {
+            float cf = b * 15.0 + float(k);
+            if (covAt(cf, row) > 0.5) { anyI = 1.0; x0 = min(x0, cf); x1 = cf; }
+        }
+        gl_FragColor = vec4(anyI, x0, x1 + 1.0, 1.0);
+        return;
+    }
+    if (PASSINDEX == P_ROWS) {
+        float f = floor(fc.x), r = floor(fc.y);
+        float anyI = 0.0, x0 = 1e4, x1 = -1.0;
+        for (int k = 0; k < 32; k++) {
+            vec4 a = IMG_NORM_PIXEL(rowA, (vec2(float(k), f * GRID.y + r) + 0.5) / vec2(32.0, GRID.y * 6.0));
+            if (a.x > 0.5) { anyI = 1.0; x0 = min(x0, a.y); x1 = max(x1, a.z); }
+        }
+        gl_FragColor = vec4(anyI, x0, x1, 1.0);
+        return;
+    }
+    // ---- lines = runs of inked rows separated by at least 5 empty rows, top first
+    if (PASSINDEX == P_LINES) {
+        float f = floor(fc.x), l = floor(fc.y);
+        float idx = 0.0, gapN = 0.0;
+        bool act = false;
+        float top = 0.0, bot = 0.0, x0 = 1e4, x1 = -1.0;
+        vec4 found = vec4(-1.0);
+        vec4 tot = vec4(1e4, -1.0, 1e4, -1.0);
+        for (int k = 0; k < 271; k++) {
+            float r = 269.0 - float(k);
+            vec4 rw = r >= 0.0 ? IMG_NORM_PIXEL(rows, (vec2(f, r) + 0.5) / vec2(6.0, GRID.y)) : vec4(0.0);
+            if (rw.x > 0.5) {
+                if (!act) { act = true; top = r; x0 = 1e4; x1 = -1.0; }
+                bot = r; x0 = min(x0, rw.y); x1 = max(x1, rw.z); gapN = 0.0;
+                tot = vec4(min(tot.x, rw.y), max(tot.y, rw.z), min(tot.z, r), max(tot.w, r + 1.0));
+            } else if (act) {
+                gapN += 1.0;
+                if (gapN >= 5.0 || r < 0.0) {
+                    if (abs(idx - l) < 0.5) found = vec4(x0, x1, bot, top + 1.0);
+                    idx += 1.0; act = false;
+                }
+            }
+        }
+        float n = min(idx, 6.0);
+        if (l < 5.5) gl_FragColor = l < n ? found : vec4(-1.0);
+        else if (l < 6.5) gl_FragColor = n > 0.0 ? tot : vec4(-1.0);
+        else gl_FragColor = vec4(n, 0.0, 0.0, 1.0);
+        return;
+    }
+    // ---- per line, does this column hold ink
+    if (PASSINDEX == P_GCOL) {
+        float c = floor(fc.x), row = floor(fc.y);
+        float f = floor(row / 6.0), l = row - f * 6.0;
+        vec4 d = IMG_NORM_PIXEL(lines, (vec2(f, l) + 0.5) / vec2(6.0, 8.0));
+        float v = 0.0;
+        if (d.x >= 0.0 && c >= d.x - 0.5 && c < d.y) {
+            for (int k = 0; k < 270; k++) {
+                float r = float(k);
+                if (r < d.z) continue;
+                if (r >= d.w) break;
+                if (covAt(c, f * GRID.y + r) > 0.5) { v = 1.0; break; }
+            }
+        }
+        gl_FragColor = vec4(v, 0.0, 0.0, 1.0);
+        return;
+    }
+    // ---- glyph index of each column = ink runs started from the left (blocks of 15)
+    if (PASSINDEX == P_GBLK) {
+        float b = floor(fc.x), row = floor(fc.y);
+        float cnt = 0.0;
+        float prev = b > 0.5 ? IMG_NORM_PIXEL(gcol, (vec2(b * 15.0 - 1.0, row) + 0.5) / vec2(GRID.x, 36.0)).r : 0.0;
+        for (int k = 0; k < 15; k++) {
+            float v = IMG_NORM_PIXEL(gcol, (vec2(b * 15.0 + float(k), row) + 0.5) / vec2(GRID.x, 36.0)).r;
+            if (v > 0.5 && prev < 0.5) cnt += 1.0;
+            prev = v;
+        }
+        gl_FragColor = vec4(cnt, 0.0, 0.0, 1.0);
+        return;
+    }
+    if (PASSINDEX == P_GIDX) {
+        float c = floor(fc.x), row = floor(fc.y);
+        float b = floor(c / 15.0);
+        float cnt = 0.0;
+        for (int k = 0; k < 32; k++) {
+            if (float(k) >= b) break;
+            cnt += IMG_NORM_PIXEL(gblk, (vec2(float(k), row) + 0.5) / vec2(32.0, 36.0)).r;
+        }
+        float prev = b > 0.5 ? IMG_NORM_PIXEL(gcol, (vec2(b * 15.0 - 1.0, row) + 0.5) / vec2(GRID.x, 36.0)).r : 0.0;
+        for (int k = 0; k < 15; k++) {
+            float kf = b * 15.0 + float(k);
+            if (kf > c) break;
+            float v = IMG_NORM_PIXEL(gcol, (vec2(kf, row) + 0.5) / vec2(GRID.x, 36.0)).r;
+            if (v > 0.5 && prev < 0.5) cnt += 1.0;
+            prev = v;
+        }
+        gl_FragColor = vec4(cnt, 0.0, 0.0, 1.0);
+        return;
+    }
+    // ---- common frame setup for the drawing passes
+    RS = RENDERSIZE;
+    vec4 s0 = readState();
+    float pr = s0.x;
+    float hlf = max(transDur * 0.5, 0.001);
+    TR = max(tSec - s0.y, 0.0);
+    T = TR * speed;
+    OUTP = s0.z > 0.5 ? sat((tSec - s0.w) / hlf) : 0.0;
+
+    // ---- the preset
+    if (PASSINDEX == P_SCENE) {
+        P = fc;
+        U = min(RS.x, RS.y) / 100.0;
+        float mg = margin * min(RS.x, RS.y);
+        CB = vec4(mg, mg, RS.x - mg, RS.y - mg);
+        float asp = RS.x / RS.y;
+        LAND = orient < 0.5 ? asp >= 1.15 : orient < 1.5;
+        ATS = IMG_SIZE(atlas);
+        G_SX = stretch; G_LEAD = leading; G_FILL = fill; G_JUST = justify;
+        G_STAG = stagger; G_IN = entree; G_OUT = sortie;
+        float bph = clockMode < 0.5 ? TR * 1.25 : tBeat * 0.5;
+        BLINK = blink > 0.01 ? step(fract(bph), 1.0 - 0.5 * blink) : 1.0;
+        setPalette(palette > 0.5 ? palette : autoPalette(pr));
+        vec4 c = drawPreset(pr);
+        // audio pulse brightens everything a little
+        c.rgb *= 1.0 + pulse * 0.35;
+        gl_FragColor = c;
+        return;
+    }
+    // ---- glow blur at 1/4 resolution
+    if ((PASSINDEX == P_GA || PASSINDEX == P_GB) && glowAmt < 0.01) { gl_FragColor = vec4(0.0); return; }
+    if (PASSINDEX == P_GA) {
+        vec2 uv = fc / RENDERSIZE;
+        vec2 px = 1.0 / IMG_SIZE(scene);
+        vec4 s = vec4(0.0);
+        float wsum = 0.0;
+        for (int k = -6; k <= 6; k++) {
+            float fk = float(k);
+            float wgt = exp(-fk * fk / 18.0);
+            s += IMG_NORM_PIXEL(scene, uv + vec2(fk * 4.0 * px.x, 0.0)) * wgt;
+            wsum += wgt;
+        }
+        gl_FragColor = s / wsum;
+        return;
+    }
+    if (PASSINDEX == P_GB) {
+        vec2 uv = fc / RENDERSIZE;
+        vec2 px = 1.0 / RENDERSIZE;
+        vec4 s = vec4(0.0);
+        float wsum = 0.0;
+        for (int k = -6; k <= 6; k++) {
+            float fk = float(k);
+            float wgt = exp(-fk * fk / 18.0);
+            s += IMG_NORM_PIXEL(gA, uv + vec2(0.0, fk * px.y)) * wgt;
+            wsum += wgt;
+        }
+        gl_FragColor = s / wsum;
+        return;
+    }
+
+    // ---- composite
+    vec2 uv = fc / RS;
+    U = min(RS.x, RS.y) / 100.0;
+    float tr = s0.z > 0.5 ? OUTP : sat(1.0 - TR / hlf);
+    if (transDur < 0.01) tr = 0.0;
+    // Signal: rows torn sideways around the cut; Glitch: rare small tears all the time.
+    float shift = 0.0;
+    if (transition > 1.5 && transition < 2.5 && tr > 0.0) {
+        float band = floor(fc.y / (U * (2.0 + 6.0 * hash(floor(TR * 30.0)))));
+        shift += (hash(band + floor(TR * 30.0)) - 0.5) * U * 30.0 * tr * tr * step(0.4, hash(band * 1.7 + floor(TR * 20.0)));
+    }
+    if (glitch > 0.0) {
+        float gt = floor(TR * 12.0);
+        float on = step(1.0 - glitch * 0.25, hash(gt * 3.3));
+        float b0 = hash(gt) * RS.y, bh = U * (1.0 + 8.0 * hash(gt + 1.0));
+        shift += on * step(b0, fc.y) * step(fc.y, b0 + bh) * (hash(gt + 2.0) - 0.5) * U * 12.0 * glitch;
+    }
+    vec2 su = uv + vec2(shift / RS.x, 0.0);
+    float ca = chroma * U * 0.22 / RS.x + abs(shift) / RS.x * 0.15;
+    vec4 c = IMG_NORM_PIXEL(scene, su);
+    vec4 cr = IMG_NORM_PIXEL(scene, su + vec2(ca, 0.0));
+    vec4 cb = IMG_NORM_PIXEL(scene, su - vec2(ca, 0.0));
+    c = vec4(cr.r, c.g, cb.b, max(c.a, max(cr.a, cb.a)));
+    // Glow.
+    vec4 gl = glowAmt < 0.01 ? vec4(0.0) : IMG_NORM_PIXEL(gB, su);
+    float gk = glowAmt * (pr < 0.5 ? 0.35 : 1.0) * (1.0 + pulse);
+    // On a transparent background the glow stays a light halo (it must not turn into an
+    // opaque blob around small text once Arena composites it over video).
+    float bmG = bgMode > 0.5 ? bgMode : autoBg(pr);
+    float gT = bmG < 1.5 ? 0.55 : 1.0;
+    vec3 add = gl.rgb * gk * 1.6 * gT;
+    c.rgb += add;
+    c.a = max(c.a, min(1.0, max(add.r, max(add.g, add.b)) * (bmG < 1.5 ? 0.45 : 1.0)));
+    // Scanlines and a slow rolling band.
+    float per = max(2.0, RS.y / 360.0);
+    float sl = 0.5 + 0.5 * cos(fc.y / per * TAU);
+    float roll = 0.5 + 0.5 * sin((fc.y / RS.y - tSec * 0.07) * TAU);
+    c.rgb *= 1.0 - scan * (0.38 * sl + 0.1 * roll);
+    // Background.
+    float bm = bgMode > 0.5 ? bgMode : autoBg(pr);
+    float bgA = bm < 1.5 ? 0.0 : (bm < 2.5 ? 0.5 : 1.0);
+    c = c + vec4(0.0, 0.0, 0.0, bgA) * (1.0 - c.a);
+    // Grain (film for the title card, video noise elsewhere).
+    float gn = (hash2(fc + fract(tSec * 7.13) * 91.0) - 0.5) * grain * 0.16;
+    c.rgb = max(c.rgb + gn * c.a, 0.0);
+    // Transitions over everything.
+    setPalette(palette > 0.5 ? palette : autoPalette(pr));
+    if (transition > 0.5 && transition < 1.5) {
+        float fa = smoothstep(0.55, 1.0, tr);
+        c = vec4(mix(C_PRI, vec3(1.0), 0.6), 1.0) * fa + c * (1.0 - fa);
+    } else if (transition > 1.5 && transition < 2.5) {
+        float nz = step(0.5, hash2(floor(fc / max(1.0, U * 0.35)) + floor(tSec * 40.0)));
+        float na = smoothstep(0.6, 1.0, tr) * 0.85;
+        c = vec4(vec3(nz) * 0.8, 1.0) * na + c * (1.0 - na);
+    } else if (transition > 2.5 && tr > 0.0) {
+        // Volet: a hazard shutter closes from the left and opens to the right.
+        bool closing = s0.z > 0.5;
+        float x = uv.x;
+        float inside = closing ? step(x, tr * 1.1 - 0.05) : step(1.0 - tr * 1.1 + 0.05, x);
+        float stp = step(0.5, fract((fc.x + fc.y) / (U * 9.0) - tSec * 0.5));
+        vec3 sc = mix(vec3(0.02), C_PRI, stp);
+        float bandC = step(abs(uv.y - 0.5), 0.08);
+        sc = mix(sc, vec3(0.0), bandC);
+        c = mix(c, vec4(sc, 1.0), inside);
+    }
+    gl_FragColor = c * opacity;
+}
